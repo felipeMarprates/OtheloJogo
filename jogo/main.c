@@ -53,6 +53,6 @@ int main() {
 
   } while (fimDoJogo);
   ;
-  // teste discord 2
+  // teste discord 3
   return 0;
 }
