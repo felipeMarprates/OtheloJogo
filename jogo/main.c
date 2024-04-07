@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #define BOLA 0
@@ -50,6 +51,29 @@ int coodernadaAtoJ(char *aAlphanumerico) {
   return res;
 } // essa funcao pega uma coordenada alphanumerica como de xadrez e retorna a
   // posicao "j" na matriz
+bool movimentoLegal(int **tabuleiro, char *aMovimento)
+{
+  
+  int tam = strlen(aMovimento);
+  bool res=false;
+  if(tam==2)//unico tamanho aceitavel
+  {
+  int intValueI=(int)aMovimento[0];
+  int intValueJ=(int)aMovimento[1];
+  if(intValueI >= 65 &&intValueI <= 72)//valores possiveis do primeiro caractere
+  {
+    if(intValueJ>=49&&intValueJ<=56)//valores possiveis do segundo caractere
+    {
+      res = true;
+    }
+  }
+  }
+  if(!res)
+  {
+      printf("\natencao:notacão invalida,digite novamente.\n");
+  }
+  return res;
+}//essa funcao decide se o movimento sugerido pelo usuario é um movimento legal com as regras do othelo
 int **createTabuleiro(int m, int n)
 {
   // A pointer to a pointer to an int is used to store the pointer to our
@@ -97,7 +121,25 @@ void drawTabuleiro(int **aTabuleiro) {
   }
   printf("---------\b A B C D E F G H \n-------------------------\n");
 }// essa funcao imprime a matriz do tabuleiro do jogo no console 
+int **userUpdateDrawTabuleiro(int **aTabuleiro, int aVezCruzBola)
+{
+  
+  char ent[2];
+  char simbolo = intToSimb(aVezCruzBola);
+  int vez = aVezCruzBola;
+  
+  do{
+  printf("\nEh a vez de:%c .Digite um movimento:\n",simbolo);
+  scanf("%s",ent);
+  }while(!movimentoLegal(aTabuleiro,ent));
+  int i = coodernadaAtoI(ent);
+  int j = coodernadaAtoJ(ent);
+  
+  aTabuleiro[i][j]=vez;
+  drawTabuleiro(aTabuleiro);
+  return aTabuleiro;
 
+}
 
 
 
@@ -136,6 +178,13 @@ int main() {
   int **tabuleiro;
   tabuleiro = createTabuleiro(8,8);
   tabuleiro = setupTabuleiro(tabuleiro);
+  //jogo
+  int vez = BOLA;
+  for(int i = 0; i<4;i++)
+  {
+    userUpdateDrawTabuleiro(tabuleiro,vez);
+    vez=(vez+1)%2;
+  }
 //finalizar
 // Free the memory that was allocated for each row in the 2D array
   for (int i = 0; i < 8; i++)
