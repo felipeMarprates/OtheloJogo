@@ -1,1 +1,1 @@
-comer
+int icima = ai;

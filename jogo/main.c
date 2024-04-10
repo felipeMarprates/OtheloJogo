@@ -6,6 +6,7 @@
 #define CRUZ 1
 #define VAZIO 2
 #define UNDERLINE 3
+#define TEMPORARIO 4 
 
 
 char intToSimb(int aNum)
@@ -25,6 +26,9 @@ char intToSimb(int aNum)
     break;
     case 3:
     res = '_';
+    break;
+    case 4:
+    res = 'T';
     break;
     default:
     res='E';
@@ -77,124 +81,181 @@ bool movimentoLegal(int **tabuleiro, char *aMovimento)
 }//essa funcao decide se o movimento sugerido pelo usuario é um movimento legal
 // com as regras do othelo
 
-int **comerHorizontal(char *aAlphanum,int **aTabuleiro,int aSimbolo )
+int **comerHorizontal(int ai, int aj,int **aTabuleiro,int aSimbolo )
 {
-  int i = coodernadaAtoI(aAlphanum);
-  int j = coodernadaAtoJ(aAlphanum);
   
-  
-  int simboloOposto = (aSimbolo+1) % 2;//X->O,O->X // 0 ->1,1->0
-  printf("\nSimbolo %d, Simbolo Oposto %d\n",aSimbolo,simboloOposto);
   int ateEsq = 0;
   int ateDir = 0;
-  for(int jDireita  = j+1;(aTabuleiro[i][jDireita])!=aSimbolo;jDireita++)
+  
+  for(int jDireita  = aj;(aTabuleiro[ai][jDireita])!=aSimbolo;jDireita++)
   {
-    printf("\nOlhando casa direita:%d , %d\n", i,jDireita);
-    if(jDireita>=8||aTabuleiro[i][jDireita]==VAZIO)
+    //printf("\nDireita:Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ai][jDireita],ai,jDireita); 
+    if((jDireita+1)>=8||aTabuleiro[ai][jDireita]==VAZIO)
     {
       ateDir=0;
       break;
     }
+    //printf("\nDireita:Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ai][jDireita],ai,jDireita); 
+
     ateDir++;
-
   }
-    printf("\nFoi visto tantas casas a direita %d\n", ateDir);
-
-    for(int jEsquerda = j-1;(aTabuleiro[i][jEsquerda])!=aSimbolo;jEsquerda--)
+  for(int jEsquerda = aj;(aTabuleiro[ai][jEsquerda])!=aSimbolo;jEsquerda--)
   {
-    printf("\nOlhando casa esquerda :%d , %d\n", i,jEsquerda);
-    if(jEsquerda<=0||aTabuleiro[i][jEsquerda]==VAZIO)
+    //printf("\nEsquerda: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ai][jEsquerda],ai,jEsquerda); 
+    if((jEsquerda-1)<=-1||aTabuleiro[ai][jEsquerda]==VAZIO)
     {
       ateEsq=0;
       break;
     }
+    //printf("\nEsquerda: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ai][jEsquerda],ai,jEsquerda); 
+
     ateEsq++;
-
   }
-    printf("\nFoi visto tantas casas a esquerda %d\n", ateEsq);
-
-  
   for(int ce = 1;ce<(ateEsq+1);ce++)
   {
-    printf("\nOlhando casa esquerda :%d , %d\n", i,(j-ce));
-    aTabuleiro[i][(j-ce)]=aSimbolo;  
+    aTabuleiro[ai][(aj-ce)]=aSimbolo;  
   }
   for(int cd = 1;cd<(ateDir+1);cd++)
   {
-    printf("\nOlhando casa DIreita :%d , %d\n", i,(j+cd));
-    printf("\nSimbolo :%d\n", simboloOposto);
-
-
-    aTabuleiro[i][(j+cd)]=aSimbolo;  
+    aTabuleiro[ai][(aj+cd)]=aSimbolo;  
   }
   return aTabuleiro;
 }
 
 
-int **comerVertical(char *aAlphanum,int **aTabuleiro,int aSimbolo )
+int **comerVertical(int ai,int aj,int **aTabuleiro,int aSimbolo )
 {
-  int i = coodernadaAtoI(aAlphanum);
-  int j = coodernadaAtoJ(aAlphanum);
   
+  int atebaixo=0;
+  int atecima=0;
   
-  int simboloOposto = (aSimbolo+1) % 2;//X->O,O->X // 0 ->1,1->0
-  printf("\nSimbolo %d, Simbolo Oposto %d\n",aSimbolo,simboloOposto);
-  int ateBaixo = 0;
-  int ateCima = 0;
-  for(int iCima  = i+1;(aTabuleiro[iCima][j])!=aSimbolo;iCima++)
+  for(int ibaixo  = ai;(aTabuleiro[ibaixo][aj])!=aSimbolo;ibaixo++)
   {
-    printf("\nOlhando casa emcima:%d , %d\n", iCima,j);
-    if(iCima>=8||aTabuleiro[iCima][j]==VAZIO)
+    if((ibaixo+1)>=8||aTabuleiro[ibaixo][aj]==VAZIO)
     {
-      ateCima=0;
+      atebaixo=0;
       break;
     }
-    ateCima++;
-
+    atebaixo++;
   }
-    printf("\nFoi visto tantas casas a emcima %d\n", ateCima);
-
-    for(int iBaixo = i-1;(aTabuleiro[iBaixo][j])!=aSimbolo;iBaixo--)
+  for(int icima = ai;(aTabuleiro[icima][aj])!=aSimbolo;icima--)
   {
-    printf("\nOlhando casa abaixo :%d , %d\n", iBaixo,j);
-    if(iBaixo<=0||aTabuleiro[iBaixo][j]==VAZIO)
+    if((icima-1)<=-1||aTabuleiro[icima][aj]==VAZIO)
     {
-      ateBaixo=0;
+      atecima=0;
       break;
     }
-    ateBaixo++;
-
+    atecima++;
   }
-    printf("\nFoi visto tantas casas a abaixo %d\n", ateBaixo);
-
-  
-  for(int cb = 1;cb<(ateBaixo+1);cb++)
+  for(int cc = 1;cc<(atecima+1);cc++)
   {
-    printf("\nOlhando casa abaixo :%d , %d\n", (i-cb),j);
-    aTabuleiro[(i-cb)][j]=aSimbolo;  
+    aTabuleiro[(ai-cc)][aj]=aSimbolo;  
   }
-  for(int ca = 1;ca<(ateCima+1);ca++)
+  for(int cb = 1;cb<(atebaixo+1);cb++)
   {
-    printf("\nOlhando casa emcima :%d , %d\n", (i+ca),j);
-    printf("\nSimbolo :%d\n", simboloOposto);
-
-
-    aTabuleiro[(i+ca)][j]=aSimbolo;  
+    aTabuleiro[(ai+cb)][aj]=aSimbolo;  
   }
   return aTabuleiro;
 }
-/*int **comerDiagonal(char *aAlphanum, int **aTabuleiro, int aSimbolo)
+int **comerDiagonalBack_Slash(int ai,int aj,int **aTabuleiro,int aSimbolo)
 {
-  aTabuleiro=comerDiagonalDir(aAlphanum,aTabuleiro,aSimbolo);
-  aTabuleiro=comerDiagonalEsq(aAlphanum,aTabuleiro,aSimbolo);
+  int atebaixodir=0;
+  int atecimaesq=0;
+  int ibaixo  = ai;
+  int jdireita=aj;
+  for(ibaixo;(aTabuleiro[ibaixo][jdireita])!=aSimbolo;ibaixo++)
+  {
+    if((ibaixo+1)>=8||(jdireita+1)>=8||aTabuleiro[ibaixo][jdireita]==VAZIO)
+    {
+      atebaixodir=0;
+      break;
+    }
+    atebaixodir++;
+    jdireita++;
+  }
+  int icima = ai;
+  int jesquerda=aj;
+  for(icima;(aTabuleiro[icima][jesquerda])!=aSimbolo;icima--)
+  {
+    if((icima-1)<=-1||(jesquerda-1)<=-1||aTabuleiro[icima][jesquerda]==VAZIO)
+    {
+      atecimaesq=0;
+      break;
+    }
+    atecimaesq++;
+    jesquerda--;
+  }
+  for(int cce = 1;cce<(atecimaesq+1);cce++)
+  {
+    aTabuleiro[(ai-cce)][(aj-cce)]=aSimbolo;  
+  }
+  for(int cbd = 1;cbd<(atebaixodir+1);cbd++)
+  {
+    aTabuleiro[(ai+cbd)][(aj+cbd)]=aSimbolo;  
+  }
+  return aTabuleiro;
+}
+int **comerDiagonalFoward_Slash(int ai,int aj,int **aTabuleiro,int aSimbolo)
+{
+  int atebaixoesq=0;
+  int atecimadir=0;
+  int ibaixo  = ai;
+  int jesquerda=aj;
+  for(ibaixo;(aTabuleiro[ibaixo][jesquerda])!=aSimbolo;ibaixo++)
+  {
+    printf("\nDireita:Olhando simbolo %c na casa:(%d,%d)",intToSimb(aTabuleiro[ibaixo][jesquerda]),ibaixo,jesquerda);
+    if((ibaixo+1)>=8||(jesquerda-1)<=-1||aTabuleiro[ibaixo][jesquerda]==VAZIO)
+    {
+      atebaixoesq=0;
+      break;
+    }
+    printf("\nDireita:Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ibaixo][jesquerda],ibaixo,jesquerda);
+
+    atebaixoesq++;
+    jesquerda--;
+  }
+  int icima = ai;
+  int jdireita=aj;
+  for(icima;(aTabuleiro[icima][jdireita])!=aSimbolo;icima--)
+  {
+    if((icima-1)<=-1||(jdireita+1)>=8||aTabuleiro[icima][jdireita]==VAZIO)
+    {
+      atecimadir=0;
+      break;
+    }
+    atecimadir++;
+    jdireita++;
+  }
+  for(int cbe = 1;cbe<(atebaixoesq+1);cbe++)
+  {
+    aTabuleiro[(ai+cbe)][(aj-cbe)]=aSimbolo;  
+  }
+  for(int ccd = 1;ccd<(atecimadir+1);ccd++)
+  {
+    aTabuleiro[(ai-ccd)][(aj+ccd)]=aSimbolo;  
+  }
+  return aTabuleiro;
+}
+int **comerDiagonal(int ai,int aj, int **aTabuleiro, int aSimbolo)
+{
+  aTabuleiro=comerDiagonalFoward_Slash(ai,aj,aTabuleiro,aSimbolo);//             diagonal-> /
+  aTabuleiro=comerDiagonalBack_Slash(ai,aj,aTabuleiro,aSimbolo);//\*   diagonal-> \     \*
   return aTabuleiro;
 
-}*/ 
+} 
 int **comerPecas(char *aAlphanum, int **aTabuleiro, int aSimbolo)
 {
-  aTabuleiro=comerHorizontal(aAlphanum,aTabuleiro,aSimbolo);
-  aTabuleiro=comerVertical(aAlphanum,aTabuleiro,aSimbolo);
-  //aTabuleiro=comerDiagonal(aAlphanum,aTabuleiro,aSimbolo);
+  //lembrando que o simbolo jogado so é colocado no final de comer todas as pecas
+  //isso eh feito para que o loop comeca na casa jogada e nao quebre o i ou j for colocado 
+  //dentro da array
+  
+  int i = coodernadaAtoI(aAlphanum);
+  int j = coodernadaAtoJ(aAlphanum);
+  aTabuleiro[i][j]=TEMPORARIO;
+  aTabuleiro=comerHorizontal(i,j,aTabuleiro,aSimbolo);
+  aTabuleiro=comerVertical(i,j,aTabuleiro,aSimbolo);
+  aTabuleiro=comerDiagonal(i,j,aTabuleiro,aSimbolo);
+  aTabuleiro[i][j]=aSimbolo;
 
   
   return aTabuleiro;
@@ -260,7 +321,7 @@ int **userUpdateDrawTabuleiro(int **aTabuleiro, int aVezCruzBola)
   int i = coodernadaAtoI(ent);
   int j = coodernadaAtoJ(ent);
   
-  aTabuleiro[i][j]=vez;
+  
   aTabuleiro=comerPecas(ent,aTabuleiro,vez);
   drawTabuleiro(aTabuleiro);
   return aTabuleiro;
