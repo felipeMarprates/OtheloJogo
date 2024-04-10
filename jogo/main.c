@@ -32,7 +32,8 @@ char intToSimb(int aNum)
   }
   
   return res;
-}//como a matriz esta no formato inteiro na hora de imprimir ela eh necessario substituir os inteiros pelo Simbolos selecionados pelos autores
+}//como a matriz esta no formato inteiro na hora de imprimir ela eh necessario substituir os inteiros
+// pelo Simbolos selecionados pelos autores
 
 
 int coodernadaAtoI(char *aAlphanumerico) {
@@ -73,7 +74,131 @@ bool movimentoLegal(int **tabuleiro, char *aMovimento)
       printf("\natencao:notacão invalida,digite novamente.\n");
   }
   return res;
-}//essa funcao decide se o movimento sugerido pelo usuario é um movimento legal com as regras do othelo
+}//essa funcao decide se o movimento sugerido pelo usuario é um movimento legal
+// com as regras do othelo
+
+int **comerHorizontal(char *aAlphanum,int **aTabuleiro,int aSimbolo )
+{
+  int i = coodernadaAtoI(aAlphanum);
+  int j = coodernadaAtoJ(aAlphanum);
+  
+  
+  int simboloOposto = (aSimbolo+1) % 2;//X->O,O->X // 0 ->1,1->0
+  printf("\nSimbolo %d, Simbolo Oposto %d\n",aSimbolo,simboloOposto);
+  int ateEsq = 0;
+  int ateDir = 0;
+  for(int jDireita  = j+1;(aTabuleiro[i][jDireita])!=aSimbolo;jDireita++)
+  {
+    printf("\nOlhando casa direita:%d , %d\n", i,jDireita);
+    if(jDireita>=8||aTabuleiro[i][jDireita]==VAZIO)
+    {
+      ateDir=0;
+      break;
+    }
+    ateDir++;
+
+  }
+    printf("\nFoi visto tantas casas a direita %d\n", ateDir);
+
+    for(int jEsquerda = j-1;(aTabuleiro[i][jEsquerda])!=aSimbolo;jEsquerda--)
+  {
+    printf("\nOlhando casa esquerda :%d , %d\n", i,jEsquerda);
+    if(jEsquerda<=0||aTabuleiro[i][jEsquerda]==VAZIO)
+    {
+      ateEsq=0;
+      break;
+    }
+    ateEsq++;
+
+  }
+    printf("\nFoi visto tantas casas a esquerda %d\n", ateEsq);
+
+  
+  for(int ce = 1;ce<(ateEsq+1);ce++)
+  {
+    printf("\nOlhando casa esquerda :%d , %d\n", i,(j-ce));
+    aTabuleiro[i][(j-ce)]=aSimbolo;  
+  }
+  for(int cd = 1;cd<(ateDir+1);cd++)
+  {
+    printf("\nOlhando casa DIreita :%d , %d\n", i,(j+cd));
+    printf("\nSimbolo :%d\n", simboloOposto);
+
+
+    aTabuleiro[i][(j+cd)]=aSimbolo;  
+  }
+  return aTabuleiro;
+}
+
+
+int **comerVertical(char *aAlphanum,int **aTabuleiro,int aSimbolo )
+{
+  int i = coodernadaAtoI(aAlphanum);
+  int j = coodernadaAtoJ(aAlphanum);
+  
+  
+  int simboloOposto = (aSimbolo+1) % 2;//X->O,O->X // 0 ->1,1->0
+  printf("\nSimbolo %d, Simbolo Oposto %d\n",aSimbolo,simboloOposto);
+  int ateBaixo = 0;
+  int ateCima = 0;
+  for(int iCima  = i+1;(aTabuleiro[iCima][j])!=aSimbolo;iCima++)
+  {
+    printf("\nOlhando casa emcima:%d , %d\n", iCima,j);
+    if(iCima>=8||aTabuleiro[iCima][j]==VAZIO)
+    {
+      ateCima=0;
+      break;
+    }
+    ateCima++;
+
+  }
+    printf("\nFoi visto tantas casas a emcima %d\n", ateCima);
+
+    for(int iBaixo = i-1;(aTabuleiro[iBaixo][j])!=aSimbolo;iBaixo--)
+  {
+    printf("\nOlhando casa abaixo :%d , %d\n", iBaixo,j);
+    if(iBaixo<=0||aTabuleiro[iBaixo][j]==VAZIO)
+    {
+      ateBaixo=0;
+      break;
+    }
+    ateBaixo++;
+
+  }
+    printf("\nFoi visto tantas casas a abaixo %d\n", ateBaixo);
+
+  
+  for(int cb = 1;cb<(ateBaixo+1);cb++)
+  {
+    printf("\nOlhando casa abaixo :%d , %d\n", (i-cb),j);
+    aTabuleiro[(i-cb)][j]=aSimbolo;  
+  }
+  for(int ca = 1;ca<(ateCima+1);ca++)
+  {
+    printf("\nOlhando casa emcima :%d , %d\n", (i+ca),j);
+    printf("\nSimbolo :%d\n", simboloOposto);
+
+
+    aTabuleiro[(i+ca)][j]=aSimbolo;  
+  }
+  return aTabuleiro;
+}
+/*int **comerDiagonal(char *aAlphanum, int **aTabuleiro, int aSimbolo)
+{
+  aTabuleiro=comerDiagonalDir(aAlphanum,aTabuleiro,aSimbolo);
+  aTabuleiro=comerDiagonalEsq(aAlphanum,aTabuleiro,aSimbolo);
+  return aTabuleiro;
+
+}*/ 
+int **comerPecas(char *aAlphanum, int **aTabuleiro, int aSimbolo)
+{
+  aTabuleiro=comerHorizontal(aAlphanum,aTabuleiro,aSimbolo);
+  aTabuleiro=comerVertical(aAlphanum,aTabuleiro,aSimbolo);
+  //aTabuleiro=comerDiagonal(aAlphanum,aTabuleiro,aSimbolo);
+
+  
+  return aTabuleiro;
+}
 int **createTabuleiro(int m, int n)
 {
   // A pointer to a pointer to an int is used to store the pointer to our
@@ -136,10 +261,11 @@ int **userUpdateDrawTabuleiro(int **aTabuleiro, int aVezCruzBola)
   int j = coodernadaAtoJ(ent);
   
   aTabuleiro[i][j]=vez;
+  aTabuleiro=comerPecas(ent,aTabuleiro,vez);
   drawTabuleiro(aTabuleiro);
   return aTabuleiro;
 
-}
+}// essa funcao permite que usuario coloque uma peca no tabuleiro 
 
 
 
@@ -151,11 +277,13 @@ int **updateTabuleiro(char* aAlphanum, int **aTabuleiro, int aSimbolo)
   drawTabuleiro(aTabuleiro);
   return aTabuleiro;
 
-}// essa funcao pega a coordenada em notacao de xadrez que usuario que jogar e qual jogador essa jogando e imprime na tela o novo tabuleiro
+}// essa funcao pega a coordenada em notacao de xadrez
+//e altera a peca de lugar
 
 
 int **setupTabuleiro(int **aTabuleiro)
 {
+  //No othelo comeca com uma cruz em e4 e d5 e bol em e5 e d4
   int i = coodernadaAtoI("E4");
   int j = coodernadaAtoJ("E4");
   aTabuleiro[i][j]=CRUZ;
@@ -173,14 +301,16 @@ int **setupTabuleiro(int **aTabuleiro)
 
 }// essa funcao pega o tabuleiro vaizo e  retorna o tabuleiro com as pecas iniciais
 
+
 int main() {
   // criar tabuleiro
   int **tabuleiro;
   tabuleiro = createTabuleiro(8,8);
   tabuleiro = setupTabuleiro(tabuleiro);
-  //jogo
   int vez = BOLA;
-  for(int i = 0; i<4;i++)
+  //jogo
+  
+  for(int i = 0; i<10;i++)
   {
     userUpdateDrawTabuleiro(tabuleiro,vez);
     vez=(vez+1)%2;
