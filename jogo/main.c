@@ -2,12 +2,17 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>//upperLetter
 #define BOLA 0
 #define CRUZ 1
 #define VAZIO 2
 #define UNDERLINE 3
 #define TEMPORARIO 4 
-
+/*Lista de coisas pra fazer
+1-> Comentar mais o codigo
+2-> Criar Funcao que conta quantos Simbolos tem no tabuleiro
+3-> Melhorar movimentolegal
+4-> Criar rodadas*/
 
 char intToSimb(int aNum)
 {
@@ -56,11 +61,10 @@ int coodernadaAtoJ(char *aAlphanumerico) {
   return res;
 } // essa funcao pega uma coordenada alphanumerica como de xadrez e retorna a
   // posicao "j" na matriz
-bool movimentoLegal(int **tabuleiro, char *aMovimento)
+bool existeEsseMovimento(char *aMovimento)
 {
-  
   int tam = strlen(aMovimento);
-  bool res=false;
+  bool existeEsseMovimento=false;
   if(tam==2)//unico tamanho aceitavel
   {
   int intValueI=(int)aMovimento[0];
@@ -69,15 +73,43 @@ bool movimentoLegal(int **tabuleiro, char *aMovimento)
   {
     if(intValueJ>=49&&intValueJ<=56)//valores possiveis do segundo caractere
     {
-      res = true;
+      existeEsseMovimento = true;
     }
   }
   }
-  if(!res)
+  if(!existeEsseMovimento)
   {
-      printf("\natencao:notacão invalida,digite novamente.\n");
+      printf("\notacao invalida,digite novamente.\n");
   }
-  return res;
+  return existeEsseMovimento;
+}
+bool essaCasaEstaVaga( int ai, int aj,int **aTabuleiro)
+{
+  bool essaCasaEstaVaga = false;
+  if(aTabuleiro[ai][aj]==VAZIO)
+  {
+    essaCasaEstaVaga= true;
+  }
+  if(essaCasaEstaVaga==false)
+  {
+    printf("\nEsta casa esta ocupada,digite novamente.\n");
+  }
+  return essaCasaEstaVaga;
+}
+bool esseMovimentoComePeca(int ai, int aj,int **aTabuleiro,int aSimbolo)
+{
+  return true;
+}
+bool movimentoLegal(int **aTabuleiro, char *aMovimento)
+{
+  int i = coodernadaAtoI(aMovimento);
+  int j = coodernadaAtoJ(aMovimento);
+  bool movimentoLegal = false;
+  if(existeEsseMovimento(aMovimento) && essaCasaEstaVaga(i,j,aTabuleiro) && esseMovimentoComePeca(i,j,aTabuleiro,VAZIO))
+  {
+    movimentoLegal = true;
+  }
+  return movimentoLegal;
 }//essa funcao decide se o movimento sugerido pelo usuario é um movimento legal
 // com as regras do othelo
 
@@ -86,38 +118,41 @@ int **comerHorizontal(int ai, int aj,int **aTabuleiro,int aSimbolo )
   
   int ateEsq = 0;
   int ateDir = 0;
+  int simboloOposto=(aSimbolo+1)%2;
+  int count;
   
-  for(int jDireita  = aj;(aTabuleiro[ai][jDireita])!=aSimbolo;jDireita++)
+  for(count  = aj+1;(count+1<8) && ((aTabuleiro[ai][count])==simboloOposto);count++)
   {
-    //printf("\nDireita:Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ai][jDireita],ai,jDireita); 
-    if((jDireita+1)>=8||aTabuleiro[ai][jDireita]==VAZIO)
-    {
-      ateDir=0;
-      break;
-    }
-    //printf("\nDireita:Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ai][jDireita],ai,jDireita); 
-
+    //teste ->printf("\nDireita: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ai][count],ai,count); 
     ateDir++;
   }
-  for(int jEsquerda = aj;(aTabuleiro[ai][jEsquerda])!=aSimbolo;jEsquerda--)
+  for(count = aj-1;(count-1>-1) && ((aTabuleiro[ai][count])==simboloOposto);count--)
   {
-    //printf("\nEsquerda: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ai][jEsquerda],ai,jEsquerda); 
-    if((jEsquerda-1)<=-1||aTabuleiro[ai][jEsquerda]==VAZIO)
-    {
-      ateEsq=0;
-      break;
-    }
-    //printf("\nEsquerda: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ai][jEsquerda],ai,jEsquerda); 
-
+    //printf("\nEsquerda: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ai][count],ai,count); 
     ateEsq++;
   }
-  for(int ce = 1;ce<(ateEsq+1);ce++)
+  int indexUltimoSimboloAEsq =  aj-(ateEsq+1);
+  int indexUltimoSimboloADir =  aj+(ateDir+1);
+
+  if(indexUltimoSimboloAEsq>-1)//index valido
   {
-    aTabuleiro[ai][(aj-ce)]=aSimbolo;  
+    if(aTabuleiro[ai][indexUltimoSimboloAEsq]==aSimbolo)// os simbolos opostos estao no meio de dois simbolos ex:XOOX
+    {
+      for(count = 1;count<(ateEsq+1);count++)
+      {
+        aTabuleiro[ai][(aj-count)]=aSimbolo;  
+      }
+    }
   }
-  for(int cd = 1;cd<(ateDir+1);cd++)
+  if(indexUltimoSimboloADir<8)//index valido
   {
-    aTabuleiro[ai][(aj+cd)]=aSimbolo;  
+    if(aTabuleiro[ai][indexUltimoSimboloADir]==aSimbolo)
+    {
+      for(count = 1;count<(ateDir+1);count++)
+      {
+        aTabuleiro[ai][(aj+count)]=aSimbolo;  
+      }
+    }
   }
   return aTabuleiro;
 }
@@ -128,32 +163,40 @@ int **comerVertical(int ai,int aj,int **aTabuleiro,int aSimbolo )
   
   int atebaixo=0;
   int atecima=0;
+  int simboloOposto=(aSimbolo+1)%2;
+  int count;
   
-  for(int ibaixo  = ai;(aTabuleiro[ibaixo][aj])!=aSimbolo;ibaixo++)
+  for(count  = ai+1;((count+1)<8) && ((aTabuleiro[count][aj])==simboloOposto);count++)
   {
-    if((ibaixo+1)>=8||aTabuleiro[ibaixo][aj]==VAZIO)
-    {
-      atebaixo=0;
-      break;
-    }
+    //printf("\nBaixo: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[count][aj],count,aj); 
     atebaixo++;
   }
-  for(int icima = ai;(aTabuleiro[icima][aj])!=aSimbolo;icima--)
+  for(count = ai-1;((count-1)>-1) && (aTabuleiro[count][aj]==simboloOposto);count--)
   {
-    if((icima-1)<=-1||aTabuleiro[icima][aj]==VAZIO)
-    {
-      atecima=0;
-      break;
-    }
+    //printf("\nAlto: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[count][aj],count,aj); 
     atecima++;
   }
-  for(int cc = 1;cc<(atecima+1);cc++)
+  int indexUltimoSimboloAcima  = ai-(atecima+1);
+  int indexUltimoSimboloAbaixo = ai+(atebaixo+1);
+  if(indexUltimoSimboloAcima>-1)//index valido
   {
-    aTabuleiro[(ai-cc)][aj]=aSimbolo;  
+    if(aTabuleiro[indexUltimoSimboloAcima][aj]==aSimbolo)
+    {
+      for(count = 1;count<(atecima+1);count++)
+      {
+        aTabuleiro[(ai-count)][aj]=aSimbolo;  
+      }
+    }
   }
-  for(int cb = 1;cb<(atebaixo+1);cb++)
+  if(indexUltimoSimboloAbaixo<8)
   {
-    aTabuleiro[(ai+cb)][aj]=aSimbolo;  
+    if(aTabuleiro[indexUltimoSimboloAbaixo][aj]==aSimbolo)
+    {
+      for(count = 1;count<(atebaixo+1);count++)
+      {
+        aTabuleiro[(ai+count)][aj]=aSimbolo;  
+      }
+    }
   }
   return aTabuleiro;
 }
@@ -161,37 +204,42 @@ int **comerDiagonalBack_Slash(int ai,int aj,int **aTabuleiro,int aSimbolo)
 {
   int atebaixodir=0;
   int atecimaesq=0;
-  int ibaixo  = ai;
-  int jdireita=aj;
-  for(ibaixo;(aTabuleiro[ibaixo][jdireita])!=aSimbolo;ibaixo++)
+  int simboloOposto=(aSimbolo+1)%2;
+  int countI,countJ;
+  for(countI=ai+1,countJ=aj+1;((countI+1)<8) && ((countJ+1)<8) && (aTabuleiro[countI][countJ]==simboloOposto);countI++,countJ++)
   {
-    if((ibaixo+1)>=8||(jdireita+1)>=8||aTabuleiro[ibaixo][jdireita]==VAZIO)
-    {
-      atebaixodir=0;
-      break;
-    }
+    //printf("\nBaixo e direita: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[countI][countJ],countI,countJ); 
     atebaixodir++;
-    jdireita++;
   }
-  int icima = ai;
-  int jesquerda=aj;
-  for(icima;(aTabuleiro[icima][jesquerda])!=aSimbolo;icima--)
+
+  for(countI=ai-1,countJ=aj-1;((countI-1)>-1)&&((countJ-1)>-1) && (aTabuleiro[countI][countJ]==simboloOposto);countI--,countJ--)
   {
-    if((icima-1)<=-1||(jesquerda-1)<=-1||aTabuleiro[icima][jesquerda]==VAZIO)
-    {
-      atecimaesq=0;
-      break;
-    }
+    //printf("\ncima e Esquerda: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[countI][countJ],countI,countJ); 
     atecimaesq++;
-    jesquerda--;
   }
-  for(int cce = 1;cce<(atecimaesq+1);cce++)
+  int indexUltimoSimboloAEsq   = aj-(atecimaesq+1);
+  int indexUltimoSimboloADir   = aj+(atebaixodir+1);
+  int indexUltimoSimboloAcima  = ai-(atecimaesq+1);
+  int indexUltimoSimboloAbaixo = ai+(atebaixodir+1);
+  if(indexUltimoSimboloAbaixo<8&&indexUltimoSimboloADir<8)//index valido
   {
-    aTabuleiro[(ai-cce)][(aj-cce)]=aSimbolo;  
+    if(aTabuleiro[indexUltimoSimboloAbaixo][indexUltimoSimboloADir]==aSimbolo)
+    {
+      for(countI = 1;countI<(atebaixodir+1);countI++)
+      {
+        aTabuleiro[(ai+countI)][(aj+countI)]=aSimbolo;  
+      }
+    }
   }
-  for(int cbd = 1;cbd<(atebaixodir+1);cbd++)
+  if(indexUltimoSimboloAcima>-1&&indexUltimoSimboloAEsq>-1)//index valido
   {
-    aTabuleiro[(ai+cbd)][(aj+cbd)]=aSimbolo;  
+    if(aTabuleiro[indexUltimoSimboloAcima][indexUltimoSimboloAEsq]==aSimbolo)
+    {
+      for(countI = 1;countI<(atecimaesq+1);countI++)
+      {
+        aTabuleiro[(ai-countI)][(aj-countI)]=aSimbolo;  
+      }
+    }
   }
   return aTabuleiro;
 }
@@ -199,46 +247,48 @@ int **comerDiagonalFoward_Slash(int ai,int aj,int **aTabuleiro,int aSimbolo)
 {
   int atebaixoesq=0;
   int atecimadir=0;
-  int ibaixo  = ai;
-  int jesquerda=aj;
-  for(ibaixo;(aTabuleiro[ibaixo][jesquerda])!=aSimbolo;ibaixo++)
+  int simboloOposto=(aSimbolo+1)%2;
+  int countI,countJ;
+  for(countI=ai+1,countJ=aj-1;((countI+1)<8) && ((countJ-1)>-1) && (aTabuleiro[countI][countJ]==simboloOposto);countI++,countJ--)
   {
-    printf("\nDireita:Olhando simbolo %c na casa:(%d,%d)",intToSimb(aTabuleiro[ibaixo][jesquerda]),ibaixo,jesquerda);
-    if((ibaixo+1)>=8||(jesquerda-1)<=-1||aTabuleiro[ibaixo][jesquerda]==VAZIO)
-    {
-      atebaixoesq=0;
-      break;
-    }
-    printf("\nDireita:Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ibaixo][jesquerda],ibaixo,jesquerda);
-
+    //printf("\nBaixo e Esquerda: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[countI][countJ],countI,countJ); 
     atebaixoesq++;
-    jesquerda--;
   }
-  int icima = ai;
-  int jdireita=aj;
-  for(icima;(aTabuleiro[icima][jdireita])!=aSimbolo;icima--)
+
+  for(countI=ai-1,countJ=aj+1;((countI-1)>-1) && ((countJ+1)<8) && (aTabuleiro[countI][countJ]==simboloOposto);countI--,countJ++)
   {
-    if((icima-1)<=-1||(jdireita+1)>=8||aTabuleiro[icima][jdireita]==VAZIO)
-    {
-      atecimadir=0;
-      break;
-    }
+    //printf("\ncima e Direita: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[countI][countJ],countI,countJ); 
     atecimadir++;
-    jdireita++;
   }
-  for(int cbe = 1;cbe<(atebaixoesq+1);cbe++)
+  int indexUltimoSimboloAEsq   = aj-(atebaixoesq+1);
+  int indexUltimoSimboloADir   = aj+(atecimadir+1);
+  int indexUltimoSimboloAcima  = ai-(atecimadir+1);
+  int indexUltimoSimboloAbaixo = ai+(atebaixoesq+1);
+  if(indexUltimoSimboloAbaixo<8&&indexUltimoSimboloAEsq>-1)
   {
-    aTabuleiro[(ai+cbe)][(aj-cbe)]=aSimbolo;  
+    if(aTabuleiro[indexUltimoSimboloAbaixo][indexUltimoSimboloAEsq]==aSimbolo)
+    {
+      for(countI = 1;countI<(atebaixoesq+1);countI++)
+      {
+        aTabuleiro[(ai+countI)][(aj-countI)]=aSimbolo;  
+      }
+    }
   }
-  for(int ccd = 1;ccd<(atecimadir+1);ccd++)
+  if(indexUltimoSimboloAcima>-1&&indexUltimoSimboloADir<8)
   {
-    aTabuleiro[(ai-ccd)][(aj+ccd)]=aSimbolo;  
+    if(aTabuleiro[indexUltimoSimboloAcima][indexUltimoSimboloADir]==aSimbolo)
+    {
+      for(countI = 1;countI<(atecimadir+1);countI++)
+      {
+        aTabuleiro[(ai-countI)][(aj+countI)]=aSimbolo;  
+      }
+    }
   }
   return aTabuleiro;
 }
 int **comerDiagonal(int ai,int aj, int **aTabuleiro, int aSimbolo)
 {
-  aTabuleiro=comerDiagonalFoward_Slash(ai,aj,aTabuleiro,aSimbolo);//             diagonal-> /
+  aTabuleiro=comerDiagonalFoward_Slash(ai,aj,aTabuleiro,aSimbolo);//   diagonal-> /
   aTabuleiro=comerDiagonalBack_Slash(ai,aj,aTabuleiro,aSimbolo);//\*   diagonal-> \     \*
   return aTabuleiro;
 
@@ -251,7 +301,6 @@ int **comerPecas(char *aAlphanum, int **aTabuleiro, int aSimbolo)
   
   int i = coodernadaAtoI(aAlphanum);
   int j = coodernadaAtoJ(aAlphanum);
-  aTabuleiro[i][j]=TEMPORARIO;
   aTabuleiro=comerHorizontal(i,j,aTabuleiro,aSimbolo);
   aTabuleiro=comerVertical(i,j,aTabuleiro,aSimbolo);
   aTabuleiro=comerDiagonal(i,j,aTabuleiro,aSimbolo);
@@ -262,52 +311,39 @@ int **comerPecas(char *aAlphanum, int **aTabuleiro, int aSimbolo)
 }
 int **createTabuleiro(int m, int n)
 {
-  // A pointer to a pointer to an int is used to store the pointer to our
-  // 2D array of ints
   int **matrix;
-
-  // malloc() is used to allocate space to store an array of pointers to ints
-  // of length m... each element in this array will point to one of the 'm'
-  // number of rows in our 2D array.  matrix will thus store the memory address
-  // of the first elemetn in this array, but we can also think of it as a
-  // pointer to our 2D array.  We use sizeof(int *) to get the size in bytes
-  // of a pointer to an int, and multiply this by the number of elements
-  // needed in our array (m) to allocate space for an array able to store
-  // this amount of pointers to ints.
   matrix = malloc(sizeof(int *) * m);
-
-  // Next we allocate space for each row of ints in our 2D array, where each
-  // element in our array of pointers to ints as given by matrix[i] is set to
-  // point to one of these rows.  sizeof(int) will give us the number of bytes
-  // that it takes to store an int, and we multiply this by the number of
-  // ints stored at each row (n, i.e. the number of columns), to have malloc()
-  // allocate enough space to store a row of ints of this size.
   for (int i = 0; i < m; i++)
+  {
     matrix[i] = malloc(sizeof(int) * n);
-
-  // Set the element in the 2D array at each row/column index to the fill value
+  }
   for (int i = 0; i < m; i++)
+  {
     for (int j = 0; j < n; j++)
+    {
       matrix[i][j] = VAZIO;
-
-  // Return the pointer to our 2D array... effectively returning the memory
-  // address of the first element in the array of pointers to ints (i.e. the
-  // array of pointers to each row of data).
+    }
+  }
   return matrix;
 }//essa funcao utiliza de ponteiros para poder usar dinamicamente uma matriz
-void drawTabuleiro(int **aTabuleiro) {
-  printf("-------------------------\n");
+void printTabuleiro(int **aTabuleiro) {
+  printf(" ----------------------------------\n");
+  printf("|----------------------------------|\n");
+  
+
   for (int i = 0; i < 8; i++) {
-    printf("-%d-------\b", (8 - i));
+    printf("|-------%d--", (8 - i));
     for (int j = 0; j < 8; j++) {
       
       printf("|%c|\b",intToSimb(aTabuleiro[i][j])) ;
     }
-    printf("\n");
+    printf("|-------|\n");
   }
-  printf("---------\b A B C D E F G H \n-------------------------\n");
+  printf("|----------------------------------|\n");
+  printf("|-----------\b|A B C D E F G H|-------|\n");
+  printf(" ---------------------------------- \n");
 }// essa funcao imprime a matriz do tabuleiro do jogo no console 
-int **userUpdateDrawTabuleiro(int **aTabuleiro, int aVezCruzBola)
+int **userUpdatePrintTabuleiro(int **aTabuleiro, int aVezCruzBola)
 {
   
   char ent[2];
@@ -317,25 +353,24 @@ int **userUpdateDrawTabuleiro(int **aTabuleiro, int aVezCruzBola)
   do{
   printf("\nEh a vez de:%c .Digite um movimento:\n",simbolo);
   scanf("%s",ent);
+  ent[0] = toupper(ent[0]);//Colocar em letra maiscula
   }while(!movimentoLegal(aTabuleiro,ent));
   int i = coodernadaAtoI(ent);
   int j = coodernadaAtoJ(ent);
   
   
   aTabuleiro=comerPecas(ent,aTabuleiro,vez);
-  drawTabuleiro(aTabuleiro);
+  printTabuleiro(aTabuleiro);
   return aTabuleiro;
 
 }// essa funcao permite que usuario coloque uma peca no tabuleiro 
 
 
 
-int **updateTabuleiro(char* aAlphanum, int **aTabuleiro, int aSimbolo)
+int **updateTabuleiro(int ai,int aj, int **aTabuleiro, int aSimbolo)
 {
-  int i = coodernadaAtoI(aAlphanum);
-  int j = coodernadaAtoJ(aAlphanum);
-  aTabuleiro[i][j]=aSimbolo;
-  drawTabuleiro(aTabuleiro);
+  aTabuleiro[ai][aj]=aSimbolo;
+  printTabuleiro(aTabuleiro);
   return aTabuleiro;
 
 }// essa funcao pega a coordenada em notacao de xadrez
@@ -357,7 +392,7 @@ int **setupTabuleiro(int **aTabuleiro)
   i = coodernadaAtoI("D5");
   j = coodernadaAtoJ("D5");
   aTabuleiro[i][j]=CRUZ;
-  drawTabuleiro(aTabuleiro);
+  printTabuleiro(aTabuleiro);
   return aTabuleiro;
 
 }// essa funcao pega o tabuleiro vaizo e  retorna o tabuleiro com as pecas iniciais
@@ -367,24 +402,23 @@ int main() {
   // criar tabuleiro
   int **tabuleiro;
   tabuleiro = createTabuleiro(8,8);
-  tabuleiro = setupTabuleiro(tabuleiro);
+  setupTabuleiro(tabuleiro);
   int vez = BOLA;
   //jogo
   
   for(int i = 0; i<10;i++)
   {
-    userUpdateDrawTabuleiro(tabuleiro,vez);
+    userUpdatePrintTabuleiro(tabuleiro,vez);
     vez=(vez+1)%2;
   }
 //finalizar
 // Free the memory that was allocated for each row in the 2D array
   for (int i = 0; i < 8; i++)
+  {
     free(tabuleiro[i]);
-
+  }
   // Free the memory that was allocated for the array of pointers to each
   // row in our 2D array
   free(tabuleiro);
-  
-  // teste discord 3
   return 0;
 }
