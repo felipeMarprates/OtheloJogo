@@ -1,1 +1,1 @@
-int icima = ai;
+*aNumde
