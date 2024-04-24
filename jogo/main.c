@@ -1,3 +1,11 @@
+/*
+Integrantes:
+Felipe Vilas Boas Marprates 15574822
+Marcos Paulo Rocha Baltazar
+Mikael Floriano da Silva
+*/
+
+
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
@@ -114,18 +122,187 @@ bool essaCasaEstaVaga( int ai, int aj,int **aTabuleiro)
   return false;
 }//essa funcao verifica se o jogador esta jogando em uma casa que ja esta ocupada
 
-
-bool esseMovimentoComePeca(int ai,int aj,int **aTabuleiro,int aSimbolo)
+int quantasPecasEsseMovimentoComeNaDir(int ai, int aj,int **aTabuleiro,int aSimbolo)
 {
-  return true;
+  int pecasComidas = 0;
+  int count;  
+  int simboloOposto=!aSimbolo;
+  for(count  = aj+1;(count+1<8) && ((aTabuleiro[ai][count])==simboloOposto);count++)
+  {
+    pecasComidas++;
+  }
+  count = aj+1+pecasComidas;
+  if(count<8&&(aTabuleiro[ai][count])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
+  {
+    return pecasComidas;
+  }
+  return 0;
+}
+int quantasPecasEsseMovimentoComeNaEsq(int ai, int aj,int **aTabuleiro,int aSimbolo)
+{
+  int pecasComidas = 0;
+  int count;  
+  int simboloOposto=(aSimbolo+1)%2;
+  for(count  = aj-1;(count-1>-1) && ((aTabuleiro[ai][count])==simboloOposto);count--)
+  {
+    pecasComidas++;
+  }
+  count = aj-1-pecasComidas;//nao sei pq eu preciso igualar isso na minha opniao ja deceria ser isso ???
+  if(count>-1&&(aTabuleiro[ai][count])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
+  {
+  return pecasComidas;
+  }
+  return 0;
+}
+int quantasPecasEsseMovimentoComeEmCima(int ai, int aj,int **aTabuleiro,int aSimbolo)
+{
+  int pecasComidas = 0;
+  int count; 
+  int aSimboloOposto=!aSimbolo; 
+  for(count  = ai-1;(count-1>-1) && ((aTabuleiro[count][aj])==aSimboloOposto);count--)
+  {
+    pecasComidas++;
+  }
+  count= ai-1-pecasComidas;
+  if(count>-1&&(aTabuleiro[count][aj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
+  {
+  return pecasComidas;
+  }
+  return 0;
+}
+int quantasPecasEsseMovimentoComeEmBaixo(int ai, int aj,int **aTabuleiro,int aSimbolo)
+{
+  int pecasComidas = 0;
+  int count;
+  int aSimboloOposto=!aSimbolo;  
+  for(count  = ai+1;(count+1<8) && ((aTabuleiro[count][aj])==aSimboloOposto);count++)
+  {
+    pecasComidas++;
+  }
+  count= ai+1+pecasComidas;
+
+  if(count<8&&(aTabuleiro[count][aj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
+  {
+  return pecasComidas;
+  }
+  return 0;
+}
+int quantasPecasEsseMovimentoComeNaDiagonalBaiDir(int ai, int aj,int **aTabuleiro,int aSimbolo)
+{
+  int pecasComidas = 0;
+  int counti,countj;  
+  int aSimboloOposto=!aSimbolo;
+  for(counti= ai+1,countj=aj+1;(counti+1<8)&&(countj+1<8) && ((aTabuleiro[counti][countj])==aSimboloOposto);counti++,countj++)
+  {
+    pecasComidas++;
+  }
+  counti= ai+1+pecasComidas;
+  countj= aj+1+pecasComidas;
+  if(counti<8&&countj<8&&(aTabuleiro[counti][countj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
+  {
+  return pecasComidas;
+  }
+  return 0;
+}
+int quantasPecasEsseMovimentoComeNaDiagonalBaiEsq(int ai, int aj,int **aTabuleiro,int aSimbolo)
+{
+  int pecasComidas = 0;
+  int counti,countj;
+  int aSimboloOposto=!aSimbolo;  
+  for(counti  = ai+1, countj=aj-1;((counti+1)<8)&&((countj-1)>-1) && ((aTabuleiro[counti][countj])==aSimboloOposto);counti++,countj--)
+  {
+    pecasComidas++;
+  }
+  counti= ai+1+pecasComidas;
+  countj= aj-1-pecasComidas;
+  if(counti<8&&countj>-1&&(aTabuleiro[counti][countj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
+  {
+  return pecasComidas;
+  }
+  return 0;
+}
+int quantasPecasEsseMovimentoComeNaDiagonalCimEsq(int ai, int aj,int **aTabuleiro,int aSimbolo)
+{
+  int pecasComidas = 0;
+  int counti,countj;  
+  int aSimboloOposto=!aSimbolo;
+  for(counti  = ai-1, countj=aj-1;(counti-1>-1)&&(countj-1>-1) && ((aTabuleiro[counti][countj])==aSimboloOposto);counti--,countj--)
+  {
+    //printf("\ncima e Esquerda: Olhando simbolo %d na casa:(%d,%d) = contador = %d\n",aTabuleiro[counti][countj],counti,countj,pecasComidas); 
+ 
+    pecasComidas++;
+  }
+  counti= ai-1-pecasComidas;
+  countj= aj-1-pecasComidas;
+  if(counti>-1&&countj>-1&&(aTabuleiro[counti][countj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
+  {
+  return pecasComidas;
+  }
+  return 0;
+}
+int quantasPecasEsseMovimentoComeNaDiagonalCimDir(int ai, int aj,int **aTabuleiro,int aSimbolo)
+{
+  int pecasComidas = 0;
+  int counti,countj;  
+  int aSimboloOposto=!aSimbolo;
+  for(counti  = ai-1,countj=aj+1;(counti-1>-1)&&(countj+1<8) && ((aTabuleiro[counti][countj])==aSimboloOposto);counti--,countj++)
+  {
+    pecasComidas++;
+  }
+  counti= ai-1-pecasComidas;
+  countj= aj+1+pecasComidas;
+  if(counti>-1&&countj<8&&(aTabuleiro[counti][countj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
+  {
+  return pecasComidas;
+  }
+  return 0;
+}
+
+int esseMovimentoComeQuantasPeca(int ai,int aj,int **aTabuleiro,int aSimbolo)
+{
+  int numeroTotal = 0;
+  //printf("%d",numeroTotal);
+  numeroTotal += quantasPecasEsseMovimentoComeEmBaixo(ai, aj,aTabuleiro,aSimbolo);
+  //printf("%d",numeroTotal);
+  numeroTotal += quantasPecasEsseMovimentoComeEmCima(ai, aj,aTabuleiro,aSimbolo);
+  //printf("%d",numeroTotal);
+  numeroTotal += quantasPecasEsseMovimentoComeNaDir(ai, aj,aTabuleiro,aSimbolo);
+  //printf("%d",numeroTotal);
+  numeroTotal += quantasPecasEsseMovimentoComeNaEsq(ai, aj,aTabuleiro,aSimbolo);
+  //printf("%d",numeroTotal);
+  numeroTotal += quantasPecasEsseMovimentoComeNaDiagonalBaiDir(ai, aj,aTabuleiro,aSimbolo);
+ // //printf("%d",numeroTotal);
+  numeroTotal += quantasPecasEsseMovimentoComeNaDiagonalBaiEsq(ai, aj,aTabuleiro,aSimbolo);
+  //printf("%d",numeroTotal);
+  numeroTotal += quantasPecasEsseMovimentoComeNaDiagonalCimDir(ai, aj,aTabuleiro,aSimbolo);
+  //printf("%d",numeroTotal);
+  numeroTotal += quantasPecasEsseMovimentoComeNaDiagonalCimEsq(ai, aj,aTabuleiro,aSimbolo);
+
+
+  return numeroTotal;
 }//essa funcao verifica se o jogador esta jogando em uma casa que altera o simbolos de outras pecas
-bool movimentoLegal(int **aTabuleiro, char *aMovimento)
+
+bool existeUmMovimentoLegal(int **aTabuleiro, int aSimbolo)
+{//
+  for(int i = 0;i < 8; i++)
+  {
+    for(int j = 0; j< 8; j++)
+    {
+      if(aTabuleiro[i][j]==VAZIO && esseMovimentoComeQuantasPeca(i,j,aTabuleiro,aSimbolo)!=0)
+      {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+bool movimentoLegal(int **aTabuleiro, char *aMovimento,int aSimboloOposto)
 {
   //mudanca de notacao
   int i = coordernadaAtoI(aMovimento);
   int j = coordernadaAtoJ(aMovimento);
   //checagem de todas condicoes
-  if(existeEsseMovimento(aMovimento) && essaCasaEstaVaga(i,j,aTabuleiro) && esseMovimentoComePeca(i,j,aTabuleiro,VAZIO))
+  if(existeEsseMovimento(aMovimento) && essaCasaEstaVaga(i,j,aTabuleiro) && esseMovimentoComeQuantasPeca(i,j,aTabuleiro,aSimboloOposto))
   {
     return true;
   }
@@ -184,116 +361,122 @@ NumDe *updateNumDePecas(Peca aPeca,NumDe* aNumde,int aValorAdd)
 int **comerHorizontal(Peca aPeca,int **aTabuleiro, NumDe* aNumde)
 {
   //declaracão
-  int ateEsq = 0;
-  int ateDir = 0;
+   
   int simboloOposto=(aPeca.simb+1)%2;
   int count;
+ 
+  int ateDir = quantasPecasEsseMovimentoComeNaDir(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
+  int ateEsq = quantasPecasEsseMovimentoComeNaEsq(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
+  //printf("\n%d,%d\n",ateEsq,ateDir);
   
-  for(count  = aPeca.j+1;(count+1<8) && ((aTabuleiro[aPeca.i][count])==simboloOposto);count++)
-  {
-    //printf("\nDireita: Olhando simbolo %d na casa:(%c%c)",aPeca.simb,coordenadaJtoA0(count),coordenadaItoA1(aPeca.i)); 
+  // for(count  = aPeca.j+1;(count+1<8) && ((aTabuleiro[aPeca.i][count])==simboloOposto);count++)
+  // {
+  //   //printf("\nDireita: Olhando simbolo %d na casa:(%c%c)",aPeca.simb,coordenadaJtoA0(count),coordenadaItoA1(aPeca.i)); 
 
-    //teste ->printf("\nDireita: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ai][count],ai,count); 
-    ateDir++;
-  }
-  for(count = aPeca.j-1;(count-1>-1) && ((aTabuleiro[aPeca.i][count])==simboloOposto);count--)
-  {
-    //printf("\nEsquerda: Olhando simbolo %d na casa:(%c%c)",aPeca.simb,coordenadaJtoA0(count),coordenadaItoA1(aPeca.i)); 
+  //   //teste ->printf("\nDireita: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ai][count],ai,count); 
+  //   ateDir++;
+  // }
+  // for(count = aPeca.j-1;(count-1>-1) && ((aTabuleiro[aPeca.i][count])==simboloOposto);count--)
+  // {
+  //   //printf("\nEsquerda: Olhando simbolo %d na casa:(%c%c)",aPeca.simb,coordenadaJtoA0(count),coordenadaItoA1(aPeca.i)); 
 
-    //printf("\nEsquerda: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ai][count],ai,count); 
-    ateEsq++;
-  }
-  int indexUltimoSimboloAEsq =  aPeca.j-(ateEsq+1);
-  int indexUltimoSimboloADir =  aPeca.j+(ateDir+1);
+  //   //printf("\nEsquerda: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ai][count],ai,count); 
+  //   ateEsq++;
+  // }
+  // int indexUltimoSimboloAEsq =  aPeca.j-(ateEsq+1);
+  // int indexUltimoSimboloADir =  aPeca.j+(ateDir+1);
 
-  if(indexUltimoSimboloAEsq>-1)//index valido
-  {
-    if(aTabuleiro[aPeca.i][indexUltimoSimboloAEsq]==aPeca.simb)// os simbolos opostos estao no meio de dois simbolos ex:XOOX
-    {
+  // if(indexUltimoSimboloAEsq>-1)//index valido
+  // {
+  //   if(aTabuleiro[aPeca.i][indexUltimoSimboloAEsq]==aPeca.simb)// os simbolos opostos estao no meio de dois simbolos ex:XOOX
+  //   {
       for(count = 1;count<(ateEsq+1);count++)
       {
         aTabuleiro[aPeca.i][(aPeca.j-count)]=aPeca.simb;  
       }
       aNumde= updateNumDePecas(aPeca,aNumde,ateEsq);
 
-    }
-  }
-  if(indexUltimoSimboloADir<8)//index valido
-  {
-    if(aTabuleiro[aPeca.i][indexUltimoSimboloADir]==aPeca.simb)
-    {
+  //   }
+  // }
+  // if(indexUltimoSimboloADir<8)//index valido
+  // {
+  //   if(aTabuleiro[aPeca.i][indexUltimoSimboloADir]==aPeca.simb)
+  //   {
       for(count = 1;count<(ateDir+1);count++)
       {
         aTabuleiro[aPeca.i][(aPeca.j+count)]=aPeca.simb;  
       }
     aNumde = updateNumDePecas(aPeca,aNumde,ateDir);
-    }
-  }
+  //   }
+  // }
   return aTabuleiro;
 }
 int **comerVertical(Peca aPeca,int **aTabuleiro,NumDe* aNumde)
 {
   
-  int atebaixo=0;
-  int atecima=0;
+  
   int simboloOposto=(aPeca.simb+1)%2;
   int count;
+  int atebaixo = quantasPecasEsseMovimentoComeEmBaixo(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
+  int atecima  = quantasPecasEsseMovimentoComeEmCima(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
   
-  for(count  = aPeca.i+1;((count+1)<8) && ((aTabuleiro[count][aPeca.j])==simboloOposto);count++)
-  {
-    //printf("\nBaixo: Olhando simbolo %d na casa:(%c%c)",aTabuleiro[count][aPeca.j],coordenadaJtoA0(aPeca.j),coordenadaItoA1(count)); 
-    atebaixo++;
-  }
-  for(count = aPeca.i-1;((count-1)>-1) && (aTabuleiro[count][aPeca.j]==simboloOposto);count--)
-  {
-    //printf("\nAlto: Olhando simbolo %d na casa:(%c%c)",aPeca.simb,coordenadaJtoA0(aPeca.j),coordenadaItoA1(count)); 
-    atecima++;
-  }
-  int indexUltimoSimboloAcima  = aPeca.i-(atecima+1);
-  int indexUltimoSimboloAbaixo = aPeca.i+(atebaixo+1);
-  if(indexUltimoSimboloAcima>-1)//index valido
-  {
-    if(aTabuleiro[indexUltimoSimboloAcima][aPeca.j]==aPeca.simb)
-    {
+  // for(count  = aPeca.i+1;((count+1)<8) && ((aTabuleiro[count][aPeca.j])==simboloOposto);count++)
+  // {
+  //   //printf("\nBaixo: Olhando simbolo %d na casa:(%c%c)",aTabuleiro[count][aPeca.j],coordenadaJtoA0(aPeca.j),coordenadaItoA1(count)); 
+  //   atebaixo++;
+  // }
+  // for(count = aPeca.i-1;((count-1)>-1) && (aTabuleiro[count][aPeca.j]==simboloOposto);count--)
+  // {
+  //   //printf("\nAlto: Olhando simbolo %d na casa:(%c%c)",aPeca.simb,coordenadaJtoA0(aPeca.j),coordenadaItoA1(count)); 
+  //   atecima++;
+  // }
+  // int indexUltimoSimboloAcima  = aPeca.i-(atecima+1);
+  // int indexUltimoSimboloAbaixo = aPeca.i+(atebaixo+1);
+  // if(indexUltimoSimboloAcima>-1)//index valido
+  // {
+  //   if(aTabuleiro[indexUltimoSimboloAcima][aPeca.j]==aPeca.simb)
+  //   {
       for(count = 1;count<(atecima+1);count++)
       {
         aTabuleiro[(aPeca.i-count)][aPeca.j]=aPeca.simb;  
       }
       aNumde = updateNumDePecas(aPeca,aNumde,atecima);
 
-    }
-  }
+  //   }
+  // }
   //printf("ultimo index %c,",coordenadaItoA1(indexUltimoSimboloAbaixo));
-  if(indexUltimoSimboloAbaixo<8)
-  {
-    if(aTabuleiro[indexUltimoSimboloAbaixo][aPeca.j]==aPeca.simb)
-    {
+  // if(indexUltimoSimboloAbaixo<8)
+  // {
+  //   if(aTabuleiro[indexUltimoSimboloAbaixo][aPeca.j]==aPeca.simb)
+  //   {
       for(count = 1;count<(atebaixo+1);count++)
       {
         aTabuleiro[(aPeca.i+count)][aPeca.j]=aPeca.simb;  
       }
       aNumde = updateNumDePecas(aPeca,aNumde,atebaixo);
-    }
-  }
+  //   }
+  // }
   return aTabuleiro;
 }
 int **comerDiagonalBack_Slash(Peca aPeca,int **aTabuleiro,NumDe* aNumde)
 {
-  int atebaixodir=0;
-  int atecimaesq=0;
+  
   int simboloOposto=(aPeca.simb+1)%2;
   int countI,countJ;
-  for(countI=aPeca.i+1,countJ=aPeca.j+1;((countI+1)<8) && ((countJ+1)<8) && (aTabuleiro[countI][countJ]==simboloOposto);countI++,countJ++)
-  {
-    //printf("\nBaixo e direita: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[countI][countJ],countI,countJ); 
-    atebaixodir++;
-  }
+  int atecimaesq  = quantasPecasEsseMovimentoComeNaDiagonalCimEsq(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
+  int atebaixodir = quantasPecasEsseMovimentoComeNaDiagonalBaiDir(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
 
-  for(countI=aPeca.i-1,countJ=aPeca.j-1;((countI-1)>-1)&&((countJ-1)>-1) && (aTabuleiro[countI][countJ]==simboloOposto);countI--,countJ--)
-  {
-    //printf("\ncima e Esquerda: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[countI][countJ],countI,countJ); 
-    atecimaesq++;
-  }
+  // for(countI=aPeca.i+1,countJ=aPeca.j+1;((countI+1)<8) && ((countJ+1)<8) && (aTabuleiro[countI][countJ]==simboloOposto);countI++,countJ++)
+  // {
+  //   //printf("\nBaixo e direita: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[countI][countJ],countI,countJ); 
+  //   atebaixodir++;
+  // }
+
+  // for(countI=aPeca.i-1,countJ=aPeca.j-1;((countI-1)>-1)&&((countJ-1)>-1) && (aTabuleiro[countI][countJ]==simboloOposto);countI--,countJ--)
+  // {
+  //   //printf("\ncima e Esquerda: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[countI][countJ],countI,countJ); 
+  //   atecimaesq++;
+  // }
   int indexUltimoSimboloAEsq   = aPeca.j-(atecimaesq+1);
   int indexUltimoSimboloADir   = aPeca.j+(atebaixodir+1);
   int indexUltimoSimboloAcima  = aPeca.i-(atecimaesq+1);
@@ -329,17 +512,20 @@ int **comerDiagonalFoward_Slash(Peca aPeca,int **aTabuleiro,NumDe* aNumde)
   int atecimadir=0;
   int simboloOposto=(aPeca.simb+1)%2;
   int countI,countJ;
-  for(countI=aPeca.i+1,countJ=aPeca.j-1;((countI+1)<8) && ((countJ-1)>-1) && (aTabuleiro[countI][countJ]==simboloOposto);countI++,countJ--)
-  {
-    //printf("\nBaixo e Esquerda: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[countI][countJ],countI,countJ); 
-    atebaixoesq++;
-  }
+  atebaixoesq = quantasPecasEsseMovimentoComeNaDiagonalBaiEsq(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
+  atecimadir  = quantasPecasEsseMovimentoComeNaDiagonalCimDir(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
 
-  for(countI=aPeca.i-1,countJ=aPeca.j+1;((countI-1)>-1) && ((countJ+1)<8) && (aTabuleiro[countI][countJ]==simboloOposto);countI--,countJ++)
-  {
-    //printf("\ncima e Direita: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[countI][countJ],countI,countJ); 
-    atecimadir++;
-  }
+  // for(countI=aPeca.i+1,countJ=aPeca.j-1;((countI+1)<8) && ((countJ-1)>-1) && (aTabuleiro[countI][countJ]==simboloOposto);countI++,countJ--)
+  // {
+  //   //printf("\nBaixo e Esquerda: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[countI][countJ],countI,countJ); 
+  //   atebaixoesq++;
+  // }
+
+  // for(countI=aPeca.i-1,countJ=aPeca.j+1;((countI-1)>-1) && ((countJ+1)<8) && (aTabuleiro[countI][countJ]==simboloOposto);countI--,countJ++)
+  // {
+  //   //printf("\ncima e Direita: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[countI][countJ],countI,countJ); 
+  //   atecimadir++;
+  // }
   int indexUltimoSimboloAEsq   = aPeca.j-(atebaixoesq+1);
   int indexUltimoSimboloADir   = aPeca.j+(atecimadir+1);
   int indexUltimoSimboloAcima  = aPeca.i-(atecimadir+1);
@@ -427,6 +613,7 @@ void printTabuleiro(int **aTabuleiro) {
     printf("|--------|\n");
   }
   printf("|------------------------------------|\n");
+  return;
 }// essa funcao imprime a matriz do tabuleiro do jogo no console 
 int **userUpdatePrintTabuleiro(int **aTabuleiro, int aVezCruzBola, NumDe* aNumde, char ent[2])
 {
@@ -485,6 +672,22 @@ int **setupTabuleiro(int **aTabuleiro)
 
 }// essa funcao pega o tabuleiro vaizo e  retorna o tabuleiro com as pecas iniciais
 //------------------- XXXXX ----------// 
+void acabarJogo(NumDe numde)
+{
+  if(numde.bolas>numde.cruzes)
+  {
+    printf("\n\n\n\nO ganhou!!\n\n\n\n\n");
+  }else if(numde.bolas==numde.cruzes)
+  {
+    printf("\n\n\n\nEmpate!\n\n\n\n\n");
+  }else
+  {
+    printf("\n\n\n\nX ganhou!!\n\n\n\n\n");
+
+  }
+  return;
+
+}
 void iniciarJogo(int **aTabuleiro,int aVez)
 {
   //declaracoes
@@ -497,28 +700,42 @@ void iniciarJogo(int **aTabuleiro,int aVez)
   do
   {
    
-    //Verificar se o movimento é legal
-    printf("|-----------|O =%2d|---|X =%2d|--------| \n",numde.bolas,numde.cruzes);
-    printf(" ------------------------------------ \n");
+  printf("|-----------|O =%2d|---|X =%2d|--------| \n",numde.bolas,numde.cruzes);
+  printf(" ------------------------------------ \n");
+    
+    //verificar se o jogador tem algum movimento legal
+    if(!existeUmMovimentoLegal(aTabuleiro,simbolo))
+    {
+      //se nao tiver pula o turno do jogador
+      simbolo=(simbolo+1)%2;
+      if(!existeUmMovimentoLegal(aTabuleiro,simbolo))
+      {
+        //se ambos nao tem movimento entao acabou jogo
+        acabarJogo(numde);
+        break;
+      }else
+      {
+        printTabuleiro("Sem movimentos, turno pulado...\n")
+      }
+      
+    }
+    
     printf("Vez de:%c.Digite um movimento:\n",intToSimb(simbolo));
-
-
+    //Verificar se o movimento é legal
     do
     {
       scanf("%s",ent);
       ent[0] = toupper(ent[0]);//Colocar em letra maiscula
 
-    }while(!movimentoLegal(aTabuleiro,ent));
+    }while(!movimentoLegal(aTabuleiro,ent,simbolo));
     //fim da verificacao
   //peca sendo colocada no tabuleiro
-  
-
   aTabuleiro = userUpdatePrintTabuleiro(aTabuleiro,simbolo,&numde,ent);
- 
-
   simbolo=(simbolo+1)%2;
 
   }while(ent[0]!='G'||ent[1]!='G');
+  return;
+
 }//Essa função inicia o jogo de Othello 
 //gerenciando o loop do jogo, no qual os jogadores
 //alternam fazendo jogadas até que um jogador decida 
@@ -527,7 +744,6 @@ void iniciarJogo(int **aTabuleiro,int aVez)
 //  verifica a legalidade das jogadas,
 //  atualiza o tabuleiro e 
 //  alterna os turnos dos jogadores até que o jogo seja concluído.
-
 int main() 
 {
   // Declaracoes de variaveis principais
@@ -540,7 +756,7 @@ int main()
   //jogo
   iniciarJogo(tabuleiro,BOLA);
 //finalizar
-//  -liberando espaco da array
+//-liberando espaco da array
   for (int i = 0; i < 8; i++)
   {
     free(tabuleiro[i]);
