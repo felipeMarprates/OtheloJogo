@@ -367,48 +367,18 @@ int **comerHorizontal(Peca aPeca,int **aTabuleiro, NumDe* aNumde)
  
   int ateDir = quantasPecasEsseMovimentoComeNaDir(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
   int ateEsq = quantasPecasEsseMovimentoComeNaEsq(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
-  //printf("\n%d,%d\n",ateEsq,ateDir);
   
-  // for(count  = aPeca.j+1;(count+1<8) && ((aTabuleiro[aPeca.i][count])==simboloOposto);count++)
-  // {
-  //   //printf("\nDireita: Olhando simbolo %d na casa:(%c%c)",aPeca.simb,coordenadaJtoA0(count),coordenadaItoA1(aPeca.i)); 
-
-  //   //teste ->printf("\nDireita: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ai][count],ai,count); 
-  //   ateDir++;
-  // }
-  // for(count = aPeca.j-1;(count-1>-1) && ((aTabuleiro[aPeca.i][count])==simboloOposto);count--)
-  // {
-  //   //printf("\nEsquerda: Olhando simbolo %d na casa:(%c%c)",aPeca.simb,coordenadaJtoA0(count),coordenadaItoA1(aPeca.i)); 
-
-  //   //printf("\nEsquerda: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[ai][count],ai,count); 
-  //   ateEsq++;
-  // }
-  // int indexUltimoSimboloAEsq =  aPeca.j-(ateEsq+1);
-  // int indexUltimoSimboloADir =  aPeca.j+(ateDir+1);
-
-  // if(indexUltimoSimboloAEsq>-1)//index valido
-  // {
-  //   if(aTabuleiro[aPeca.i][indexUltimoSimboloAEsq]==aPeca.simb)// os simbolos opostos estao no meio de dois simbolos ex:XOOX
-  //   {
-      for(count = 1;count<(ateEsq+1);count++)
-      {
-        aTabuleiro[aPeca.i][(aPeca.j-count)]=aPeca.simb;  
-      }
-      aNumde= updateNumDePecas(aPeca,aNumde,ateEsq);
-
-  //   }
-  // }
-  // if(indexUltimoSimboloADir<8)//index valido
-  // {
-  //   if(aTabuleiro[aPeca.i][indexUltimoSimboloADir]==aPeca.simb)
-  //   {
-      for(count = 1;count<(ateDir+1);count++)
-      {
-        aTabuleiro[aPeca.i][(aPeca.j+count)]=aPeca.simb;  
-      }
-    aNumde = updateNumDePecas(aPeca,aNumde,ateDir);
-  //   }
-  // }
+  for(count = 1;count<(ateEsq+1);count++)
+  {
+    aTabuleiro[aPeca.i][(aPeca.j-count)]=aPeca.simb;  
+  }
+  aNumde= updateNumDePecas(aPeca,aNumde,ateEsq);
+  for(count = 1;count<(ateDir+1);count++)
+  {
+  aTabuleiro[aPeca.i][(aPeca.j+count)]=aPeca.simb;  
+  }
+  aNumde = updateNumDePecas(aPeca,aNumde,ateDir);
+ 
   return aTabuleiro;
 }
 int **comerVertical(Peca aPeca,int **aTabuleiro,NumDe* aNumde)
@@ -419,43 +389,19 @@ int **comerVertical(Peca aPeca,int **aTabuleiro,NumDe* aNumde)
   int count;
   int atebaixo = quantasPecasEsseMovimentoComeEmBaixo(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
   int atecima  = quantasPecasEsseMovimentoComeEmCima(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
-  
-  // for(count  = aPeca.i+1;((count+1)<8) && ((aTabuleiro[count][aPeca.j])==simboloOposto);count++)
-  // {
-  //   //printf("\nBaixo: Olhando simbolo %d na casa:(%c%c)",aTabuleiro[count][aPeca.j],coordenadaJtoA0(aPeca.j),coordenadaItoA1(count)); 
-  //   atebaixo++;
-  // }
-  // for(count = aPeca.i-1;((count-1)>-1) && (aTabuleiro[count][aPeca.j]==simboloOposto);count--)
-  // {
-  //   //printf("\nAlto: Olhando simbolo %d na casa:(%c%c)",aPeca.simb,coordenadaJtoA0(aPeca.j),coordenadaItoA1(count)); 
-  //   atecima++;
-  // }
-  // int indexUltimoSimboloAcima  = aPeca.i-(atecima+1);
-  // int indexUltimoSimboloAbaixo = aPeca.i+(atebaixo+1);
-  // if(indexUltimoSimboloAcima>-1)//index valido
-  // {
-  //   if(aTabuleiro[indexUltimoSimboloAcima][aPeca.j]==aPeca.simb)
-  //   {
       for(count = 1;count<(atecima+1);count++)
       {
         aTabuleiro[(aPeca.i-count)][aPeca.j]=aPeca.simb;  
       }
       aNumde = updateNumDePecas(aPeca,aNumde,atecima);
 
-  //   }
-  // }
-  //printf("ultimo index %c,",coordenadaItoA1(indexUltimoSimboloAbaixo));
-  // if(indexUltimoSimboloAbaixo<8)
-  // {
-  //   if(aTabuleiro[indexUltimoSimboloAbaixo][aPeca.j]==aPeca.simb)
-  //   {
+
       for(count = 1;count<(atebaixo+1);count++)
       {
         aTabuleiro[(aPeca.i+count)][aPeca.j]=aPeca.simb;  
       }
       aNumde = updateNumDePecas(aPeca,aNumde,atebaixo);
-  //   }
-  // }
+ 
   return aTabuleiro;
 }
 int **comerDiagonalBack_Slash(Peca aPeca,int **aTabuleiro,NumDe* aNumde)
@@ -466,93 +412,40 @@ int **comerDiagonalBack_Slash(Peca aPeca,int **aTabuleiro,NumDe* aNumde)
   int atecimaesq  = quantasPecasEsseMovimentoComeNaDiagonalCimEsq(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
   int atebaixodir = quantasPecasEsseMovimentoComeNaDiagonalBaiDir(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
 
-  // for(countI=aPeca.i+1,countJ=aPeca.j+1;((countI+1)<8) && ((countJ+1)<8) && (aTabuleiro[countI][countJ]==simboloOposto);countI++,countJ++)
-  // {
-  //   //printf("\nBaixo e direita: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[countI][countJ],countI,countJ); 
-  //   atebaixodir++;
-  // }
-
-  // for(countI=aPeca.i-1,countJ=aPeca.j-1;((countI-1)>-1)&&((countJ-1)>-1) && (aTabuleiro[countI][countJ]==simboloOposto);countI--,countJ--)
-  // {
-  //   //printf("\ncima e Esquerda: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[countI][countJ],countI,countJ); 
-  //   atecimaesq++;
-  // }
-  int indexUltimoSimboloAEsq   = aPeca.j-(atecimaesq+1);
-  int indexUltimoSimboloADir   = aPeca.j+(atebaixodir+1);
-  int indexUltimoSimboloAcima  = aPeca.i-(atecimaesq+1);
-  int indexUltimoSimboloAbaixo = aPeca.i+(atebaixodir+1);
-  if(indexUltimoSimboloAbaixo<8&&indexUltimoSimboloADir<8)//se o index for valido
+  for(countI = 1;countI<(atebaixodir+1);countI++)
   {
-    if(aTabuleiro[indexUltimoSimboloAbaixo][indexUltimoSimboloADir]==aPeca.simb)
-    {
-      for(countI = 1;countI<(atebaixodir+1);countI++)
-      {
-        aTabuleiro[(aPeca.i+countI)][(aPeca.j+countI)]=aPeca.simb;  
-      }
-      aNumde = updateNumDePecas(aPeca,aNumde,atebaixodir);
-    }
+    aTabuleiro[(aPeca.i+countI)][(aPeca.j+countI)]=aPeca.simb;  
   }
-  if(indexUltimoSimboloAcima>-1&&indexUltimoSimboloAEsq>-1)//index valido
+  aNumde = updateNumDePecas(aPeca,aNumde,atebaixodir);
+ 
+  for(countI = 1;countI<(atecimaesq+1);countI++)
   {
-    if(aTabuleiro[indexUltimoSimboloAcima][indexUltimoSimboloAEsq]==aPeca.simb)
-    {
-      for(countI = 1;countI<(atecimaesq+1);countI++)
-      {
-        aTabuleiro[(aPeca.i-countI)][(aPeca.j-countI)]=aPeca.simb;  
-      }
-      aNumde = updateNumDePecas(aPeca,aNumde,atecimaesq);
-
-    }
+    aTabuleiro[(aPeca.i-countI)][(aPeca.j-countI)]=aPeca.simb;  
   }
+  aNumde = updateNumDePecas(aPeca,aNumde,atecimaesq);
+
+  
   return aTabuleiro;
 }
 int **comerDiagonalFoward_Slash(Peca aPeca,int **aTabuleiro,NumDe* aNumde)
 {
   int atebaixoesq=0;
   int atecimadir=0;
-  int simboloOposto=(aPeca.simb+1)%2;
   int countI,countJ;
   atebaixoesq = quantasPecasEsseMovimentoComeNaDiagonalBaiEsq(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
   atecimadir  = quantasPecasEsseMovimentoComeNaDiagonalCimDir(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
 
-  // for(countI=aPeca.i+1,countJ=aPeca.j-1;((countI+1)<8) && ((countJ-1)>-1) && (aTabuleiro[countI][countJ]==simboloOposto);countI++,countJ--)
-  // {
-  //   //printf("\nBaixo e Esquerda: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[countI][countJ],countI,countJ); 
-  //   atebaixoesq++;
-  // }
-
-  // for(countI=aPeca.i-1,countJ=aPeca.j+1;((countI-1)>-1) && ((countJ+1)<8) && (aTabuleiro[countI][countJ]==simboloOposto);countI--,countJ++)
-  // {
-  //   //printf("\ncima e Direita: Olhando simbolo %d na casa:(%d,%d)",aTabuleiro[countI][countJ],countI,countJ); 
-  //   atecimadir++;
-  // }
-  int indexUltimoSimboloAEsq   = aPeca.j-(atebaixoesq+1);
-  int indexUltimoSimboloADir   = aPeca.j+(atecimadir+1);
-  int indexUltimoSimboloAcima  = aPeca.i-(atecimadir+1);
-  int indexUltimoSimboloAbaixo = aPeca.i+(atebaixoesq+1);
-  if(indexUltimoSimboloAbaixo<8&&indexUltimoSimboloAEsq>-1)
+  for(countI = 1;countI<(atebaixoesq+1);countI++)
   {
-    if(aTabuleiro[indexUltimoSimboloAbaixo][indexUltimoSimboloAEsq]==aPeca.simb)
-    {
-      for(countI = 1;countI<(atebaixoesq+1);countI++)
-      {
-        aTabuleiro[(aPeca.i+countI)][(aPeca.j-countI)]=aPeca.simb;  
-      }
-      aNumde = updateNumDePecas(aPeca,aNumde,atebaixoesq);
-
-    }
+    aTabuleiro[(aPeca.i+countI)][(aPeca.j-countI)]=aPeca.simb;  
   }
-  if(indexUltimoSimboloAcima>-1&&indexUltimoSimboloADir<8)
+  aNumde = updateNumDePecas(aPeca,aNumde,atebaixoesq);
+  for(countI = 1;countI<(atecimadir+1);countI++)
   {
-    if(aTabuleiro[indexUltimoSimboloAcima][indexUltimoSimboloADir]==aPeca.simb)
-    {
-      for(countI = 1;countI<(atecimadir+1);countI++)
-      {
-        aTabuleiro[(aPeca.i-countI)][(aPeca.j+countI)]=aPeca.simb;  
-      }
-      aNumde = updateNumDePecas(aPeca,aNumde,atecimadir);
-    }
+    aTabuleiro[(aPeca.i-countI)][(aPeca.j+countI)]=aPeca.simb;  
   }
+  aNumde = updateNumDePecas(aPeca,aNumde,atecimadir);
+  
   return aTabuleiro;
 }
 int **comerDiagonal(Peca aPeca, int **aTabuleiro,NumDe* aNumde)
@@ -715,7 +608,7 @@ void iniciarJogo(int **aTabuleiro,int aVez)
         break;
       }else
       {
-        printTabuleiro("Sem movimentos, turno pulado...\n")
+        printf("Sem movimentos, turno pulado...\n");
       }
       
     }
