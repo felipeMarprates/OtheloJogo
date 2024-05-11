@@ -3,6 +3,7 @@ Integrantes:
 Felipe Vilas Boas Marprates 15574822
 Marcos Paulo Rocha Baltazar
 Mikael Floriano da Silva
+Objetivo do programa:
 */
 
 
@@ -33,22 +34,22 @@ char intToSimb(int aNum)
   switch(aNum)
   {
     case 0:
-    res = 'O';
+    res = 'O';//BOLA
     break;
     case 1:
-    res = 'X';
+    res = 'X';//CRUZ
     break;
     case 2:
-    res = ' ';
+    res = ' ';//VAZIO
     break;
     case 3:
-    res = '_';
+    res = '_';//UNDERLINE
     break;
     case 4:
-    res = 'T';
+    res = 'T';//TEMPORARY
     break;
     default:
-    res='E';
+    res='E';//ERROR
 
   }
   
@@ -72,11 +73,11 @@ typedef struct{
 
 int coordernadaAtoI(char *aAlphanumerico) {
   return (int)aAlphanumerico[1] - 49;
-} // essa funcao pega uma coordenada alphanumerica como de xadrez e retorna a
+} // essa funcao pega uma coordenada alphanumerica e retorna o equivalente ao index I na matriz
 
 int coordernadaAtoJ(char *aAlphanumerico) {
   return (int)aAlphanumerico[0] - 65;
-} // essa funcao pega uma coordenada alphanumerica como de xadrez e retorna a
+} // essa funcao pega uma coordenada alphanumerica e retorna o equivalente ao index J na matriz
 
 char coordenadaItoA1(int ai) {
   return (char)(ai + 49);
@@ -88,9 +89,147 @@ char coordenadaJtoA0(int aj) {
 
 
 
-//------------------- XXXXX -----------//
+//----------------------------------------XXXXXXXXXXX---------------------------------//
 
-//------------------- Checar se o movimento é legal ----------
+//------------------- Olhar quantas casas é possivel comer com um movimento----------//
+//----------------------- funcoes quantasPecasEsseMovimentoCome --------------------//
+
+int quantasPecasEsseMovimentoComeNaDir(int ai, int aj,int **aTabuleiro,int aSimbolo)
+{
+  int pecasComidas = 0;
+  int count;  
+  int simboloOposto=!aSimbolo;
+  for(count  = aj+1;(count<8) && ((aTabuleiro[ai][count])==simboloOposto);count++)
+  {
+    pecasComidas++;
+  }
+  if(count<8&&(aTabuleiro[ai][count])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
+  {
+    return pecasComidas;
+  }
+  return 0;
+}
+int quantasPecasEsseMovimentoComeNaEsq(int ai, int aj,int **aTabuleiro,int aSimbolo)
+{
+  int pecasComidas = 0;
+  int count;  
+  int simboloOposto=(aSimbolo+1)%2;
+  for(count  = aj-1;(count>-1) && ((aTabuleiro[ai][count])==simboloOposto);count--)
+  {
+    pecasComidas++;
+  }
+  if(count>-1&&(aTabuleiro[ai][count])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
+  {
+  return pecasComidas;
+  }
+  return 0;
+}
+int quantasPecasEsseMovimentoComeEmCima(int ai, int aj,int **aTabuleiro,int aSimbolo)
+{
+  int pecasComidas = 0;
+  int count; 
+  int aSimboloOposto=!aSimbolo; 
+  for(count  = ai-1;(count>-1) && ((aTabuleiro[count][aj])==aSimboloOposto);count--)
+  {
+    pecasComidas++;
+  }
+  count= ai-1-pecasComidas;
+  if(count>-1&&(aTabuleiro[count][aj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
+  {
+  return pecasComidas;
+  }
+  return 0;
+}
+int quantasPecasEsseMovimentoComeEmBaixo(int ai, int aj,int **aTabuleiro,int aSimbolo)
+{
+  int pecasComidas = 0;
+  int count;
+  int aSimboloOposto=!aSimbolo;  
+  for(count  = ai+1;(count<8) && ((aTabuleiro[count][aj])==aSimboloOposto);count++)
+  {
+    pecasComidas++;
+  }
+  count= ai+1+pecasComidas;
+
+  if(count<8&&(aTabuleiro[count][aj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
+  {
+  return pecasComidas;
+  }
+  return 0;
+}
+int quantasPecasEsseMovimentoComeNaDiagonalBaiDir(int ai, int aj,int **aTabuleiro,int aSimbolo)
+{
+  int pecasComidas = 0;
+  int counti,countj;  
+  int aSimboloOposto=!aSimbolo;
+  for(counti= ai+1,countj=aj+1;(counti<8)&&(countj<8) && ((aTabuleiro[counti][countj])==aSimboloOposto);counti++,countj++)
+  {
+    pecasComidas++;
+  }
+  //counti= ai+1+pecasComidas;
+  //countj= aj+1+pecasComidas;
+  if(counti<8&&countj<8&&(aTabuleiro[counti][countj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
+  {
+  return pecasComidas;
+  }
+  return 0;
+}
+int quantasPecasEsseMovimentoComeNaDiagonalBaiEsq(int ai, int aj,int **aTabuleiro,int aSimbolo)
+{
+  int pecasComidas = 0;
+  int counti,countj;
+  int aSimboloOposto=!aSimbolo;  
+  for(counti  = ai+1, countj=aj-1;(counti<8)&&(countj>-1) && ((aTabuleiro[counti][countj])==aSimboloOposto);counti++,countj--)
+  {
+    pecasComidas++;
+  }
+  //counti= ai+1+pecasComidas;
+  //countj= aj-1-pecasComidas;
+  if(counti<8&&countj>-1&&(aTabuleiro[counti][countj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
+  {
+  return pecasComidas;
+  }
+  return 0;
+}
+int quantasPecasEsseMovimentoComeNaDiagonalCimEsq(int ai, int aj,int **aTabuleiro,int aSimbolo)
+{
+  int pecasComidas = 0;
+  int counti,countj;  
+  int aSimboloOposto=!aSimbolo;
+  for(counti  = ai-1, countj=aj-1;(counti>-1)&&(countj>-1) && ((aTabuleiro[counti][countj])==aSimboloOposto);counti--,countj--)
+  {
+    //printf("\ncima e Esquerda: Olhando simbolo %d na casa:(%d,%d) = contador = %d\n",aTabuleiro[counti][countj],counti,countj,pecasComidas); 
+ 
+    pecasComidas++;
+  }
+  //counti= ai-1-pecasComidas;
+  //countj= aj-1-pecasComidas;
+  if(counti>-1&&countj>-1&&(aTabuleiro[counti][countj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
+  {
+  return pecasComidas;
+  }
+  return 0;
+}
+int quantasPecasEsseMovimentoComeNaDiagonalCimDir(int ai, int aj,int **aTabuleiro,int aSimbolo)
+{
+  int pecasComidas = 0;
+  int counti,countj;  
+  int aSimboloOposto=!aSimbolo;
+  for(counti  = ai-1,countj=aj+1;(counti>-1)&&(countj<8) && ((aTabuleiro[counti][countj])==aSimboloOposto);counti--,countj++)
+  {
+    pecasComidas++;
+  }
+  counti= ai-1-pecasComidas;
+  countj= aj+1+pecasComidas;
+  if(counti>-1&&countj<8&&(aTabuleiro[counti][countj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
+  {
+  return pecasComidas;
+  }
+  return 0;
+}
+
+
+//------------------- Checar se o movimento é legal ------------//
 
 
 bool existeEsseMovimento(char *aMovimento)
@@ -122,163 +261,18 @@ bool essaCasaEstaVaga( int ai, int aj,int **aTabuleiro)
   return false;
 }//essa funcao verifica se o jogador esta jogando em uma casa que ja esta ocupada
 
-int quantasPecasEsseMovimentoComeNaDir(int ai, int aj,int **aTabuleiro,int aSimbolo)
-{
-  int pecasComidas = 0;
-  int count;  
-  int simboloOposto=!aSimbolo;
-  for(count  = aj+1;(count+1<8) && ((aTabuleiro[ai][count])==simboloOposto);count++)
-  {
-    pecasComidas++;
-  }
-  count = aj+1+pecasComidas;
-  if(count<8&&(aTabuleiro[ai][count])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
-  {
-    return pecasComidas;
-  }
-  return 0;
-}
-int quantasPecasEsseMovimentoComeNaEsq(int ai, int aj,int **aTabuleiro,int aSimbolo)
-{
-  int pecasComidas = 0;
-  int count;  
-  int simboloOposto=(aSimbolo+1)%2;
-  for(count  = aj-1;(count-1>-1) && ((aTabuleiro[ai][count])==simboloOposto);count--)
-  {
-    pecasComidas++;
-  }
-  count = aj-1-pecasComidas;//nao sei pq eu preciso igualar isso na minha opniao ja deceria ser isso ???
-  if(count>-1&&(aTabuleiro[ai][count])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
-  {
-  return pecasComidas;
-  }
-  return 0;
-}
-int quantasPecasEsseMovimentoComeEmCima(int ai, int aj,int **aTabuleiro,int aSimbolo)
-{
-  int pecasComidas = 0;
-  int count; 
-  int aSimboloOposto=!aSimbolo; 
-  for(count  = ai-1;(count-1>-1) && ((aTabuleiro[count][aj])==aSimboloOposto);count--)
-  {
-    pecasComidas++;
-  }
-  count= ai-1-pecasComidas;
-  if(count>-1&&(aTabuleiro[count][aj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
-  {
-  return pecasComidas;
-  }
-  return 0;
-}
-int quantasPecasEsseMovimentoComeEmBaixo(int ai, int aj,int **aTabuleiro,int aSimbolo)
-{
-  int pecasComidas = 0;
-  int count;
-  int aSimboloOposto=!aSimbolo;  
-  for(count  = ai+1;(count+1<8) && ((aTabuleiro[count][aj])==aSimboloOposto);count++)
-  {
-    pecasComidas++;
-  }
-  count= ai+1+pecasComidas;
-
-  if(count<8&&(aTabuleiro[count][aj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
-  {
-  return pecasComidas;
-  }
-  return 0;
-}
-int quantasPecasEsseMovimentoComeNaDiagonalBaiDir(int ai, int aj,int **aTabuleiro,int aSimbolo)
-{
-  int pecasComidas = 0;
-  int counti,countj;  
-  int aSimboloOposto=!aSimbolo;
-  for(counti= ai+1,countj=aj+1;(counti+1<8)&&(countj+1<8) && ((aTabuleiro[counti][countj])==aSimboloOposto);counti++,countj++)
-  {
-    pecasComidas++;
-  }
-  counti= ai+1+pecasComidas;
-  countj= aj+1+pecasComidas;
-  if(counti<8&&countj<8&&(aTabuleiro[counti][countj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
-  {
-  return pecasComidas;
-  }
-  return 0;
-}
-int quantasPecasEsseMovimentoComeNaDiagonalBaiEsq(int ai, int aj,int **aTabuleiro,int aSimbolo)
-{
-  int pecasComidas = 0;
-  int counti,countj;
-  int aSimboloOposto=!aSimbolo;  
-  for(counti  = ai+1, countj=aj-1;((counti+1)<8)&&((countj-1)>-1) && ((aTabuleiro[counti][countj])==aSimboloOposto);counti++,countj--)
-  {
-    pecasComidas++;
-  }
-  counti= ai+1+pecasComidas;
-  countj= aj-1-pecasComidas;
-  if(counti<8&&countj>-1&&(aTabuleiro[counti][countj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
-  {
-  return pecasComidas;
-  }
-  return 0;
-}
-int quantasPecasEsseMovimentoComeNaDiagonalCimEsq(int ai, int aj,int **aTabuleiro,int aSimbolo)
-{
-  int pecasComidas = 0;
-  int counti,countj;  
-  int aSimboloOposto=!aSimbolo;
-  for(counti  = ai-1, countj=aj-1;(counti-1>-1)&&(countj-1>-1) && ((aTabuleiro[counti][countj])==aSimboloOposto);counti--,countj--)
-  {
-    //printf("\ncima e Esquerda: Olhando simbolo %d na casa:(%d,%d) = contador = %d\n",aTabuleiro[counti][countj],counti,countj,pecasComidas); 
- 
-    pecasComidas++;
-  }
-  counti= ai-1-pecasComidas;
-  countj= aj-1-pecasComidas;
-  if(counti>-1&&countj>-1&&(aTabuleiro[counti][countj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
-  {
-  return pecasComidas;
-  }
-  return 0;
-}
-int quantasPecasEsseMovimentoComeNaDiagonalCimDir(int ai, int aj,int **aTabuleiro,int aSimbolo)
-{
-  int pecasComidas = 0;
-  int counti,countj;  
-  int aSimboloOposto=!aSimbolo;
-  for(counti  = ai-1,countj=aj+1;(counti-1>-1)&&(countj+1<8) && ((aTabuleiro[counti][countj])==aSimboloOposto);counti--,countj++)
-  {
-    pecasComidas++;
-  }
-  counti= ai-1-pecasComidas;
-  countj= aj+1+pecasComidas;
-  if(counti>-1&&countj<8&&(aTabuleiro[counti][countj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
-  {
-  return pecasComidas;
-  }
-  return 0;
-}
 
 int esseMovimentoComeQuantasPeca(int ai,int aj,int **aTabuleiro,int aSimbolo)
 {
   int numeroTotal = 0;
-  //printf("%d",numeroTotal);
   numeroTotal += quantasPecasEsseMovimentoComeEmBaixo(ai, aj,aTabuleiro,aSimbolo);
-  //printf("%d",numeroTotal);
   numeroTotal += quantasPecasEsseMovimentoComeEmCima(ai, aj,aTabuleiro,aSimbolo);
-  //printf("%d",numeroTotal);
   numeroTotal += quantasPecasEsseMovimentoComeNaDir(ai, aj,aTabuleiro,aSimbolo);
-  //printf("%d",numeroTotal);
   numeroTotal += quantasPecasEsseMovimentoComeNaEsq(ai, aj,aTabuleiro,aSimbolo);
-  //printf("%d",numeroTotal);
   numeroTotal += quantasPecasEsseMovimentoComeNaDiagonalBaiDir(ai, aj,aTabuleiro,aSimbolo);
- // //printf("%d",numeroTotal);
   numeroTotal += quantasPecasEsseMovimentoComeNaDiagonalBaiEsq(ai, aj,aTabuleiro,aSimbolo);
-  //printf("%d",numeroTotal);
   numeroTotal += quantasPecasEsseMovimentoComeNaDiagonalCimDir(ai, aj,aTabuleiro,aSimbolo);
-  //printf("%d",numeroTotal);
   numeroTotal += quantasPecasEsseMovimentoComeNaDiagonalCimEsq(ai, aj,aTabuleiro,aSimbolo);
-
-
   return numeroTotal;
 }//essa funcao verifica se o jogador esta jogando em uma casa que altera o simbolos de outras pecas
 
@@ -316,8 +310,6 @@ bool movimentoLegal(int **aTabuleiro, char *aMovimento,int aSimboloOposto)
   return false;
 }//essa funcao decide se o movimento sugerido pelo usuario é um movimento legal
 // com as regras do othelo
-//------------------- XXXXXXXX -----------//
-//-----------------Funcoes olhar casas-----\\
 //------------------- XXXXXXXX -----------//
 //-----------------Funcao contar pecas-----\\
 
@@ -389,18 +381,17 @@ int **comerVertical(Peca aPeca,int **aTabuleiro,NumDe* aNumde)
   int count;
   int atebaixo = quantasPecasEsseMovimentoComeEmBaixo(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
   int atecima  = quantasPecasEsseMovimentoComeEmCima(aPeca.i,aPeca.j,aTabuleiro,aPeca.simb);
-      for(count = 1;count<(atecima+1);count++)
-      {
-        aTabuleiro[(aPeca.i-count)][aPeca.j]=aPeca.simb;  
-      }
-      aNumde = updateNumDePecas(aPeca,aNumde,atecima);
+  for(count = 1;count<(atecima+1);count++)
+  {
+    aTabuleiro[(aPeca.i-count)][aPeca.j]=aPeca.simb;  
+  }
+  aNumde = updateNumDePecas(aPeca,aNumde,atecima);
 
-
-      for(count = 1;count<(atebaixo+1);count++)
-      {
-        aTabuleiro[(aPeca.i+count)][aPeca.j]=aPeca.simb;  
-      }
-      aNumde = updateNumDePecas(aPeca,aNumde,atebaixo);
+  for(count = 1;count<(atebaixo+1);count++)
+  {
+    aTabuleiro[(aPeca.i+count)][aPeca.j]=aPeca.simb;  
+  }
+  aNumde = updateNumDePecas(aPeca,aNumde,atebaixo);
  
   return aTabuleiro;
 }
@@ -464,7 +455,6 @@ int **comerPecas(Peca aPeca, int **aTabuleiro, NumDe *aNumde)
   
   aTabuleiro[aPeca.i][aPeca.j]=aPeca.simb;
 
-  
   return aTabuleiro;
 }//A função executa a lógica de captura em diferentes direções 
 //(horizontal, vertical e diagonal) para garantir que todas as peças 
@@ -592,7 +582,7 @@ void iniciarJogo(int **aTabuleiro,int aVez)
 
   do
   {
-   
+  //contador de pecas e fim do tabuleiro
   printf("|-----------|O =%2d|---|X =%2d|--------| \n",numde.bolas,numde.cruzes);
   printf(" ------------------------------------ \n");
     
@@ -642,19 +632,18 @@ int main()
   // Declaracoes de variaveis principais
   int **tabuleiro;
   int simboloIncial = BOLA;
-  Peca movimentosPossiveis[64];
   //Criacao do Tabuleiro e Organizar Posicao Inical das Pecas
   tabuleiro = createTabuleiro(8,8);
   tabuleiro = setupTabuleiro(tabuleiro);
   //jogo
   iniciarJogo(tabuleiro,BOLA);
-//finalizar
-//-liberando espaco da array
+  //finalizar
+  //liberando espaco da array
   for (int i = 0; i < 8; i++)
   {
     free(tabuleiro[i]);
   }
   free(tabuleiro);
-//fim do programa
+  //fim do programa
   return 0;
 }
