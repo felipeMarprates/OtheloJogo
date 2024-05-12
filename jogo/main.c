@@ -4,8 +4,9 @@ Felipe Vilas Boas Marprates 15574822
 Marcos Paulo Rocha Baltazar
 Mikael Floriano da Silva
 Objetivo do programa:
-*/
 
+*/
+//printf("posicao = %c%c, simbolo atual = %c, simbolo substituido",coordenadaJtoA0(j),coordenadaItoA1(i),intTosimb(aTabuleiro[i][j],aPeca.simb));
 
 #include <stdbool.h>
 #include <string.h>
@@ -26,27 +27,27 @@ Objetivo do programa:
 */
 
 
-// -------------------dicionario -------------------
-char intToSimb(int aNum)
+// -------------------dicionario ------------------- //
+char intToSimbolo(int aNum)
 {
 
   char res;
   switch(aNum)
   {
-    case 0:
-    res = 'O';//BOLA
+    case BOLA:
+    res = 'O';
     break;
-    case 1:
-    res = 'X';//CRUZ
+    case CRUZ:
+    res = 'X';
     break;
-    case 2:
-    res = ' ';//VAZIO
+    case VAZIO:
+    res = ' ';
     break;
-    case 3:
-    res = '_';//UNDERLINE
+    case UNDERLINE:
+    res = '_';
     break;
-    case 4:
-    res = 'T';//TEMPORARY
+    case TEMPORARIO:
+    res = 'T';
     break;
     default:
     res='E';//ERROR
@@ -62,12 +63,12 @@ typedef struct{
   int i;
   int j;
   int simb;
-}Peca;//essa struct é para simplificar o codigo ja que os elementos sempre estao associados uns aos outros
+}Peca;//essa struct é para simplificar o codigo ja que uma peca semore tem essas tres coisas
 typedef struct{
   int bolas;
   int cruzes;
 }NumDe;//essa struct é pra armazenar num de bolas e num de cruzes
-//------------------- XXXX ----------------------\\
+//------------------------------ XXXX ---------------------------------\\
 
 //-----traducao alphanumerico to I e J, e I e J to alphanumerico-------\\
 
@@ -251,44 +252,41 @@ bool existeEsseMovimento(char *aMovimento)
   
   return false;
 }//esse funcao determina se o movimento é um dos 64 movimentos existentes no othelo
-bool essaCasaEstaVaga( int ai, int aj,int **aTabuleiro)
-{
-  if(aTabuleiro[ai][aj]==VAZIO)
-  {
-    return true;
-  }
-
-  return false;
-}//essa funcao verifica se o jogador esta jogando em uma casa que ja esta ocupada
 
 
 int esseMovimentoComeQuantasPeca(int ai,int aj,int **aTabuleiro,int aSimbolo)
 {
-  int numeroTotal = 0;
-  numeroTotal += quantasPecasEsseMovimentoComeEmBaixo(ai, aj,aTabuleiro,aSimbolo);
-  numeroTotal += quantasPecasEsseMovimentoComeEmCima(ai, aj,aTabuleiro,aSimbolo);
-  numeroTotal += quantasPecasEsseMovimentoComeNaDir(ai, aj,aTabuleiro,aSimbolo);
-  numeroTotal += quantasPecasEsseMovimentoComeNaEsq(ai, aj,aTabuleiro,aSimbolo);
-  numeroTotal += quantasPecasEsseMovimentoComeNaDiagonalBaiDir(ai, aj,aTabuleiro,aSimbolo);
-  numeroTotal += quantasPecasEsseMovimentoComeNaDiagonalBaiEsq(ai, aj,aTabuleiro,aSimbolo);
-  numeroTotal += quantasPecasEsseMovimentoComeNaDiagonalCimDir(ai, aj,aTabuleiro,aSimbolo);
-  numeroTotal += quantasPecasEsseMovimentoComeNaDiagonalCimEsq(ai, aj,aTabuleiro,aSimbolo);
-  return numeroTotal;
+  int numeroDePecasComidas = 0;
+  numeroDePecasComidas += quantasPecasEsseMovimentoComeEmBaixo(ai, aj,aTabuleiro,aSimbolo);
+  numeroDePecasComidas += quantasPecasEsseMovimentoComeEmCima(ai, aj,aTabuleiro,aSimbolo);
+  numeroDePecasComidas += quantasPecasEsseMovimentoComeNaDir(ai, aj,aTabuleiro,aSimbolo);
+  numeroDePecasComidas += quantasPecasEsseMovimentoComeNaEsq(ai, aj,aTabuleiro,aSimbolo);
+  numeroDePecasComidas += quantasPecasEsseMovimentoComeNaDiagonalBaiDir(ai, aj,aTabuleiro,aSimbolo);
+  numeroDePecasComidas += quantasPecasEsseMovimentoComeNaDiagonalBaiEsq(ai, aj,aTabuleiro,aSimbolo);
+  numeroDePecasComidas += quantasPecasEsseMovimentoComeNaDiagonalCimDir(ai, aj,aTabuleiro,aSimbolo);
+  numeroDePecasComidas += quantasPecasEsseMovimentoComeNaDiagonalCimEsq(ai, aj,aTabuleiro,aSimbolo);
+  return numeroDePecasComidas;
 }//essa funcao verifica se o jogador esta jogando em uma casa que altera o simbolos de outras pecas
 
 bool existeUmMovimentoLegal(int **aTabuleiro, int aSimbolo)
-{//
+{
+  bool res =false;
   for(int i = 0;i < 8; i++)
   {
     for(int j = 0; j< 8; j++)
     {
-      if(aTabuleiro[i][j]==VAZIO && esseMovimentoComeQuantasPeca(i,j,aTabuleiro,aSimbolo)!=0)
+      if(aTabuleiro[i][j]==UNDERLINE)//se a casa é jogavel no movimento anterio nao quer dizer que ela vai ser pro proximo
       {
-        return true;
+        aTabuleiro[i][j]=VAZIO;
+      }
+      if(aTabuleiro[i][j]==VAZIO && esseMovimentoComeQuantasPeca(i,j,aTabuleiro,aSimbolo)>0)
+      {
+        aTabuleiro[i][j]=UNDERLINE;
+        res = true;
       }
     }
   }
-  return false;
+  return res;
 }
 bool movimentoLegal(int **aTabuleiro, char *aMovimento,int aSimboloOposto)
 {
@@ -296,12 +294,13 @@ bool movimentoLegal(int **aTabuleiro, char *aMovimento,int aSimboloOposto)
   int i = coordernadaAtoI(aMovimento);
   int j = coordernadaAtoJ(aMovimento);
   //checagem de todas condicoes
-  if(existeEsseMovimento(aMovimento) && essaCasaEstaVaga(i,j,aTabuleiro) && esseMovimentoComeQuantasPeca(i,j,aTabuleiro,aSimboloOposto))
+  if(existeEsseMovimento(aMovimento) && aTabuleiro[i][j]==UNDERLINE)
   {
     return true;
   }
   if(aMovimento[0]=='G'&&aMovimento[1]=='G')
   {
+    
     return true;//esse input é usado quando o usuario deseja parar de jogar
                 //Logo para sair doop loop isso precisa ser verdadeiro;
   }
@@ -313,25 +312,27 @@ bool movimentoLegal(int **aTabuleiro, char *aMovimento,int aSimboloOposto)
 //------------------- XXXXXXXX -----------//
 //-----------------Funcao contar pecas-----\\
 
-NumDe *updateNumDePecaJogada(Peca aPeca,NumDe* aNumde,bool aJogou)
+NumDe *updateNumDePecasPor1(Peca aPeca,NumDe* aNumde)
 {
   //printf("simbolo %c, valor adicionado %d",intToSimb(aPeca.simb),aJogou);
     if(aPeca.simb==CRUZ)
     {
-      aNumde->cruzes+=((int) aJogou);
+      aNumde->cruzes+=1;
     }
     else
     {
-      aNumde->bolas +=((int) aJogou);
+      aNumde->bolas +=1;
     }
   return aNumde;
 }
 //Esta função atualiza a contagem das peças do jogo (bolas e cruzes)
 //com base na jogada do jogador. Ela incrementa a contagem da peça do jogador
-//(bola ou cruz) com base em se eles colocaram uma peça no tabuleiro.
+//(bola ou cruz) em 1.
+
+
 NumDe *updateNumDePecas(Peca aPeca,NumDe* aNumde,int aValorAdd)
 {
-  //printf("simbolo %c, valor adicionado %d",intToSimb(aPeca.simb),aValorAdd);
+  
     if(aPeca.simb==CRUZ)
     {
       aNumde->cruzes+=aValorAdd;
@@ -481,7 +482,7 @@ int **createTabuleiro(int m, int n)
   }
   return matrix;
 }//essa funcao utiliza de ponteiros para poder usar dinamicamente uma matriz
-void printTabuleiro(int **aTabuleiro) {
+void printTabuleiro(int **aTabuleiro, NumDe numde) {
   printf(" ------------------------------------\n");
   printf("|------------\b|A B C D E F G H|--------|\n");
   printf("|------------------------------------|\n");
@@ -491,47 +492,37 @@ void printTabuleiro(int **aTabuleiro) {
     printf("|--------%d--", (i+1));
     for (int j = 0; j < 8; j++) {
       
-      printf("|%c|\b",intToSimb(aTabuleiro[i][j])) ;
+      printf("|%c|\b",intToSimbolo(aTabuleiro[i][j])) ;
     }
     printf("|--------|\n");
   }
   printf("|------------------------------------|\n");
+  printf("|-----------|O =%2d|---|X =%2d|--------| \n",numde.bolas,numde.cruzes);
+  printf(" ------------------------------------ \n");
+  
   return;
 }// essa funcao imprime a matriz do tabuleiro do jogo no console 
-int **userUpdatePrintTabuleiro(int **aTabuleiro, int aVezCruzBola, NumDe* aNumde, char ent[2])
+int **userUpdateTabuleiro(int **aTabuleiro, int aSimbolo, NumDe* aNumde, char jogada[2])
 {
-  if(ent[0]=='G'&&ent[1]=='G')
+  if(jogada[0]=='G'&&jogada[1]=='G')
   {
     return aTabuleiro;
-  }
+  }// condicao de saida do jogo
 
+  //Criar a Peca jogada
   Peca peca;
-  char simbolo = intToSimb(aVezCruzBola);
-  peca.simb = aVezCruzBola;
- 
-
- 
-  peca.i = coordernadaAtoI(ent);
-  peca.j = coordernadaAtoJ(ent);
+  peca.simb = aSimbolo;
+  peca.i = coordernadaAtoI(jogada);
+  peca.j = coordernadaAtoJ(jogada);
   
-
-  aNumde = updateNumDePecaJogada(peca,aNumde,true);
+  //Aumentar o Contador de pecas por Um
+  aNumde = updateNumDePecasPor1(peca,aNumde);
+  //Alterar o simbolo das pecas Comidas
   aTabuleiro=comerPecas(peca,aTabuleiro,aNumde);
   
-  printTabuleiro(aTabuleiro);
   return aTabuleiro;
 
 }// essa funcao permite que usuario coloque uma peca no tabuleiro 
-
-
-
-int **updateTabuleiro(Peca aPeca, int **aTabuleiro)
-{
-  aTabuleiro[aPeca.i][aPeca.j]=aPeca.simb;
-  return aTabuleiro;
-
-}// essa funcao pega a coordenada 
-//e altera a peca de lugar
 
 
 int **setupTabuleiro(int **aTabuleiro)
@@ -539,33 +530,35 @@ int **setupTabuleiro(int **aTabuleiro)
   //No othelo comeca com uma cruz em e4 e d5 e bol em e5 e d4
   int i = coordernadaAtoI("E4");
   int j = coordernadaAtoJ("E4");
-  aTabuleiro[i][j]=CRUZ;
+  aTabuleiro[i][j]=BOLA;
   i = coordernadaAtoI("E5");
   j = coordernadaAtoJ("E5");
-  aTabuleiro[i][j]=BOLA;
+  aTabuleiro[i][j]=CRUZ;
   i = coordernadaAtoI("D4");
   j = coordernadaAtoJ("D4");
-  aTabuleiro[i][j]=BOLA;
+  aTabuleiro[i][j]=CRUZ;
   i = coordernadaAtoI("D5");
   j = coordernadaAtoJ("D5");
-  aTabuleiro[i][j]=CRUZ;
+  aTabuleiro[i][j]=BOLA;
   
-  printTabuleiro(aTabuleiro);
   return aTabuleiro;
 
 }// essa funcao pega o tabuleiro vaizo e  retorna o tabuleiro com as pecas iniciais
+
+
+
 //------------------- XXXXX ----------// 
 void acabarJogo(NumDe numde)
 {
   if(numde.bolas>numde.cruzes)
   {
-    printf("\n\n\n\nO ganhou!!\n\n\n\n\n");
+    printf("\n\n                O ganhou!!!\n\n\n\n\n");
   }else if(numde.bolas==numde.cruzes)
   {
-    printf("\n\n\n\nEmpate!\n\n\n\n\n");
+    printf("\n\n                Empate!\n\n\n\n\n");
   }else
   {
-    printf("\n\n\n\nX ganhou!!\n\n\n\n\n");
+    printf("\n\n                X ganhou!!!\n\n\n\n\n");
 
   }
   return;
@@ -579,31 +572,27 @@ void iniciarJogo(int **aTabuleiro,int aVez)
   numde.bolas=2;
   numde.cruzes=2;
   int simbolo = aVez;//como vai entrar num loop é preciso de outra variavel
-
   do
   {
-  //contador de pecas e fim do tabuleiro
-  printf("|-----------|O =%2d|---|X =%2d|--------| \n",numde.bolas,numde.cruzes);
-  printf(" ------------------------------------ \n");
-    
     //verificar se o jogador tem algum movimento legal
     if(!existeUmMovimentoLegal(aTabuleiro,simbolo))
     {
-      //se nao tiver pula o turno do jogador
+      //se nao tiver movimentos pula o turno do jogador
       simbolo=(simbolo+1)%2;
       if(!existeUmMovimentoLegal(aTabuleiro,simbolo))
       {
-        //se ambos nao tem movimento entao acabou jogo
-        acabarJogo(numde);
+        //acabou o jogo 
         break;
-      }else
+      }
+      else
       {
         printf("Sem movimentos, turno pulado...\n");
       }
       
     }
-    
-    printf("Vez de:%c.Digite um movimento:\n",intToSimb(simbolo));
+    //Printar na tela tabuleiro
+    printTabuleiro(aTabuleiro,numde);
+    printf("Vez de:%c.Digite um movimento:\n",intToSimbolo(simbolo));
     //Verificar se o movimento é legal
     do
     {
@@ -613,10 +602,14 @@ void iniciarJogo(int **aTabuleiro,int aVez)
     }while(!movimentoLegal(aTabuleiro,ent,simbolo));
     //fim da verificacao
   //peca sendo colocada no tabuleiro
-  aTabuleiro = userUpdatePrintTabuleiro(aTabuleiro,simbolo,&numde,ent);
+  aTabuleiro = userUpdateTabuleiro(aTabuleiro,simbolo,&numde,ent);
   simbolo=(simbolo+1)%2;
 
   }while(ent[0]!='G'||ent[1]!='G');
+  
+  //jogo acabou
+  printTabuleiro(aTabuleiro, numde);
+  acabarJogo(numde);
   return;
 
 }//Essa função inicia o jogo de Othello 
