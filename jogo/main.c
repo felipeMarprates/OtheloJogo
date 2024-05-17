@@ -1,4 +1,5 @@
 /*
+link github:https://github.com/felipeMarprates/OtheloJogo
 Integrantes:
 Felipe Vilas Boas Marprates 15574822
 Marcos Paulo Rocha Baltazar
@@ -184,11 +185,9 @@ int quantasPecasEsseMovimentoComeNaDiagonalBaiEsq(int ai, int aj,int **aTabuleir
   {
     pecasComidas++;
   }
-  //counti= ai+1+pecasComidas;
-  //countj= aj-1-pecasComidas;
   if(counti<8&&countj>-1&&(aTabuleiro[counti][countj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
   {
-  return pecasComidas;
+    return pecasComidas;
   }
   return 0;
 }
@@ -199,15 +198,11 @@ int quantasPecasEsseMovimentoComeNaDiagonalCimEsq(int ai, int aj,int **aTabuleir
   int aSimboloOposto=!aSimbolo;
   for(counti  = ai-1, countj=aj-1;(counti>-1)&&(countj>-1) && ((aTabuleiro[counti][countj])==aSimboloOposto);counti--,countj--)
   {
-    //printf("\ncima e Esquerda: Olhando simbolo %d na casa:(%d,%d) = contador = %d\n",aTabuleiro[counti][countj],counti,countj,pecasComidas); 
- 
     pecasComidas++;
   }
-  //counti= ai-1-pecasComidas;
-  //countj= aj-1-pecasComidas;
   if(counti>-1&&countj>-1&&(aTabuleiro[counti][countj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
   {
-  return pecasComidas;
+    return pecasComidas;
   }
   return 0;
 }
@@ -220,11 +215,10 @@ int quantasPecasEsseMovimentoComeNaDiagonalCimDir(int ai, int aj,int **aTabuleir
   {
     pecasComidas++;
   }
-  counti= ai-1-pecasComidas;
-  countj= aj+1+pecasComidas;
+  
   if(counti>-1&&countj<8&&(aTabuleiro[counti][countj])==aSimbolo)//index valido e  se depois que ele saiu do loop é um simbolo contrario
   {
-  return pecasComidas;
+    return pecasComidas;
   }
   return 0;
 }
