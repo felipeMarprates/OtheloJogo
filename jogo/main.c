@@ -663,7 +663,7 @@ int main()
   scanf("%d",&ent);
   if(ent==1)//usuario escolheu a versao humano x humano
   {
-    printf("Digite GG para fechar o programa.\n");
+    printf("Digite GG para fechar o programa.\nPara jogar digite primeiro a Letra da casa que voce jogar e depois o numero da casa ex:d3.\n");
     jogo_humanoXhumano();
   }else if(ent==2)//usuario escolheu a versao humano x ia
   {
